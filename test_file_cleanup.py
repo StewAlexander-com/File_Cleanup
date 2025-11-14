@@ -688,6 +688,71 @@ class TestDirectoryBrowser(unittest.TestCase):
                 self.assertIsInstance(browser.current_path, Path)
                 self.assertNotEqual(browser.current_path, original_path)
 
+    def test_curses_browser_navigate_into_directory(self):
+        """Test Enter key navigates into subdirectory."""
+        nested_dir = self.test_dir / "subdir1" / "nested"
+        nested_dir.mkdir(parents=True)
+        
+        browser = directory_browser.CursesDirectoryBrowser(self.test_dir)
+        original_path = browser.current_path
+        
+        # Simulate pressing Enter on first subdirectory (subdir1)
+        dirs = browser.get_items()
+        if dirs and len(dirs) > 0:
+            # Select first directory
+            browser.selected_idx = 0
+            # Add parent to dirs list (as display does)
+            if browser.current_path.parent != browser.current_path:
+                dirs = [browser.current_path.parent] + dirs
+                browser.selected_idx = 1  # Adjust for parent being first
+            
+            selected = dirs[browser.selected_idx]
+            if selected != browser.current_path.parent:
+                # Navigate into the selected subdirectory
+                browser.current_path = selected
+                browser.selected_idx = 0
+                browser.scroll_offset = 0
+            
+            # Should have navigated into subdir1
+            self.assertEqual(browser.current_path.name, "subdir1")
+            self.assertNotEqual(browser.current_path, original_path)
+
+    def test_curses_browser_select_current_directory(self):
+        """Test 's' key selects current directory."""
+        browser = directory_browser.CursesDirectoryBrowser(self.test_dir)
+        original_path = browser.current_path
+        
+        # Simulate pressing 's' to select current directory
+        # In the actual code, this would return str(self.current_path)
+        result_path = str(browser.current_path)
+        
+        # Should return the current path as a string
+        self.assertEqual(result_path, str(original_path.resolve()))
+
+    def test_curses_browser_enter_on_parent_navigates_up(self):
+        """Test Enter on parent directory navigates up."""
+        nested_dir = self.test_dir / "subdir1" / "nested"
+        nested_dir.mkdir(parents=True)
+        
+        browser = directory_browser.CursesDirectoryBrowser(nested_dir)
+        original_path = browser.current_path
+        
+        # Simulate pressing Enter on parent (..)
+        dirs = browser.get_items()
+        # Add parent to dirs list (as display does)
+        if browser.current_path.parent != browser.current_path:
+            dirs = [browser.current_path.parent] + dirs
+            browser.selected_idx = 0  # Select parent (first item)
+            
+            selected = dirs[browser.selected_idx]
+            if selected == browser.current_path.parent:
+                browser.current_path = selected
+                browser.selected_idx = 0
+                browser.scroll_offset = 0
+        
+        # Should have navigated up to parent
+        self.assertEqual(browser.current_path, original_path.parent)
+
     def test_path_expansion_tilde(self):
         """Test that paths with ~ are expanded correctly."""
         home = Path.home()

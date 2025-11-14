@@ -218,7 +218,7 @@ class CursesDirectoryBrowser:
         
         # Navigation instructions
         instructions = [
-            "↑↓: Navigate | Enter: Select | ←/b: Up | 1-9: Jump to level | t: Type path | h: Home | q: Quit"
+            "↑↓: Navigate | Enter: Go into | s: Select | ←/b: Up | 1-9: Jump to level | t: Type path | h: Home | q: Quit"
         ]
         y_pos = height - len(instructions) - 1
         for i, instr in enumerate(instructions):
@@ -252,16 +252,23 @@ class CursesDirectoryBrowser:
         
         if key == ord('q') or key == 27:  # q or ESC
             return None
-        elif key == ord('\n') or key == ord('\r'):  # Enter
+        elif key == ord('\n') or key == ord('\r'):  # Enter - navigate into directory
             if dirs and 0 <= self.selected_idx < len(dirs):
                 selected = dirs[self.selected_idx]
                 if selected == self.current_path.parent:
+                    # Go up to parent
                     self.current_path = selected
                     self.selected_idx = 0
                     self.scroll_offset = 0
                     return 'navigate'
                 else:
-                    return str(selected)
+                    # Navigate into the selected subdirectory
+                    self.current_path = selected
+                    self.selected_idx = 0
+                    self.scroll_offset = 0
+                    return 'navigate'
+        elif key == ord('s'):  # 's' key to select current directory
+            return str(self.current_path)
         elif key == curses.KEY_UP:
             if self.selected_idx > 0:
                 self.selected_idx -= 1

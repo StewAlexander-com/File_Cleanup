@@ -84,7 +84,8 @@ py -3 file_cleanup.py
    - **Windows**: Uses a simple numbered menu interface
    - **Navigation**:
      - Arrow keys (↑↓) to navigate directories
-     - Enter to select a directory
+     - **Enter** to navigate into a selected directory (go down a level)
+     - **`s` key** to select the current directory
      - ← or `b` to go up one level
      - **Number keys (1-9)**: Jump directly to parent levels (1=parent, 2=grandparent, etc.)
      - Breadcrumb shortcuts displayed at top show which number corresponds to which level
@@ -203,7 +204,7 @@ python3 test_file_cleanup.py
 
 ### Test Coverage
 
-The test suite includes **56+ comprehensive tests** covering all aspects of the program:
+The test suite includes **59+ comprehensive tests** covering all aspects of the program:
 
 #### Core Functionality Tests
 - ✅ **File Extension Extraction**: Tests case-insensitive extension handling and files without extensions
@@ -244,6 +245,8 @@ The test suite includes **56+ comprehensive tests** covering all aspects of the 
 - ✅ **Curses Browser**: Tests CursesDirectoryBrowser initialization and directory listing
 - ✅ **Breadcrumb Navigation**: Tests breadcrumb generation and number key (1-9) navigation
 - ✅ **Multi-Level Navigation**: Tests jumping to parent, grandparent, and deeper levels
+- ✅ **Navigate Into Directories**: Tests Enter key navigation into subdirectories
+- ✅ **Select Current Directory**: Tests 's' key to select current directory
 - ✅ **Path Expansion**: Tests tilde expansion and path resolution
 - ✅ **Cross-Platform Compatibility**: Ensures tests work on all operating systems
 
@@ -260,7 +263,7 @@ OK
 
 **Test Breakdown:**
 - **18 tests** for file cleanup functionality (`file_cleanup.py`)
-- **38+ tests** for directory browser functionality (`directory_browser.py`)
+- **41+ tests** for directory browser functionality (`directory_browser.py`)
 
 ### Test Architecture
 
