@@ -153,15 +153,61 @@ class CursesDirectoryBrowser:
         except PermissionError:
             return []
     
+    def _get_breadcrumbs(self) -> List[Path]:
+        """Get list of parent directories for breadcrumb navigation."""
+        breadcrumbs = []
+        path = self.current_path
+        while path != path.parent:
+            breadcrumbs.insert(0, path)
+            path = path.parent
+        # Add root
+        breadcrumbs.insert(0, path)
+        return breadcrumbs
+    
     def display(self, stdscr) -> Optional[str]:
         """Display directory browser using curses."""
         stdscr.clear()
         height, width = stdscr.getmaxyx()
         
-        # Header
-        header = f"Directory Browser - {self.current_path}"
+        # Get breadcrumbs for navigation
+        breadcrumbs = self._get_breadcrumbs()
+        
+        # Header with full path
+        header = f"Directory Browser"
         stdscr.addstr(0, 0, header[:width-1], curses.A_BOLD)
         stdscr.addstr(1, 0, "=" * (width - 1))
+        
+        # Breadcrumb navigation (clickable path)
+        breadcrumb_line = 2
+        path_str = str(self.current_path)
+        if len(path_str) > width - 1:
+            # Truncate from left if too long
+            path_str = "..." + path_str[-(width-4):]
+        stdscr.addstr(breadcrumb_line, 0, f"Path: {path_str}"[:width-1], curses.A_DIM)
+        
+        # Show breadcrumb shortcuts (1-9 keys to jump to parent levels)
+        # Display shows: [1]parent [2]grandparent [3]great-grandparent etc.
+        if len(breadcrumbs) > 1:
+            breadcrumb_shortcuts = []
+            # Show parents in reverse order (most recent first): parent, grandparent, etc.
+            # We want to show up to 9 parent levels
+            num_levels = min(9, len(breadcrumbs) - 1)  # -1 to exclude current
+            for i in range(num_levels):
+                # Go backwards from current: breadcrumbs[-2] = parent, breadcrumbs[-3] = grandparent
+                bc_idx = len(breadcrumbs) - 2 - i
+                if bc_idx >= 0:
+                    bc = breadcrumbs[bc_idx]
+                    name = bc.name if bc.name else "/"
+                    breadcrumb_shortcuts.append(f"[{i+1}]{name}")
+            
+            if breadcrumb_shortcuts:
+                shortcuts_str = " | ".join(breadcrumb_shortcuts)
+                if len(shortcuts_str) > width - 1:
+                    shortcuts_str = shortcuts_str[:width-1]
+                stdscr.addstr(breadcrumb_line + 1, 0, shortcuts_str[:width-1], curses.A_DIM)
+        
+        separator_line = breadcrumb_line + (2 if len(breadcrumbs) > 1 else 1)
+        stdscr.addstr(separator_line, 0, "-" * (width - 1))
         
         # Get directories
         dirs = self.get_items()
@@ -172,18 +218,19 @@ class CursesDirectoryBrowser:
         
         # Navigation instructions
         instructions = [
-            "↑↓: Navigate | Enter: Select | ←: Go up | t: Type path | h: Home | q: Quit"
+            "↑↓: Navigate | Enter: Select | ←/b: Up | 1-9: Jump to level | t: Type path | h: Home | q: Quit"
         ]
         y_pos = height - len(instructions) - 1
         for i, instr in enumerate(instructions):
             stdscr.addstr(y_pos + i, 0, instr[:width-1], curses.A_DIM)
         
         # Display directories
-        display_height = y_pos - 3
+        display_start = separator_line + 1
+        display_height = y_pos - display_start - 1
         visible_dirs = dirs[self.scroll_offset:self.scroll_offset + display_height]
         
         for i, d in enumerate(visible_dirs):
-            y = 3 + i
+            y = display_start + i
             if y >= y_pos:
                 break
             
@@ -237,6 +284,19 @@ class CursesDirectoryBrowser:
             self.current_path = Path.home()
             self.selected_idx = 0
             self.scroll_offset = 0
+            return 'navigate'
+        elif ord('1') <= key <= ord('9'):  # Number keys 1-9 to jump to breadcrumb levels
+            # Recalculate breadcrumbs for navigation
+            nav_breadcrumbs = self._get_breadcrumbs()
+            # Map 1-9 to breadcrumb levels (1 = parent, 2 = grandparent, etc.)
+            level = key - ord('1')  # 0-8
+            # Calculate which breadcrumb level (from end, so 1 = parent, 2 = grandparent, etc.)
+            if level < len(nav_breadcrumbs) - 1:  # -1 because we don't want to jump to current
+                target_idx = len(nav_breadcrumbs) - 2 - level  # Reverse order: 1=parent, 2=grandparent
+                if 0 <= target_idx < len(nav_breadcrumbs):
+                    self.current_path = nav_breadcrumbs[target_idx]
+                    self.selected_idx = 0
+                    self.scroll_offset = 0
             return 'navigate'
         elif key == ord('t'):
             curses.endwin()

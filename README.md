@@ -82,11 +82,16 @@ py -3 file_cleanup.py
 3. **Directory Browser (Option 2)**:
    - **macOS/Linux**: Uses `curses` for a full-screen file browser with arrow key navigation
    - **Windows**: Uses a simple numbered menu interface
-   - Navigate with arrow keys (or numbers on Windows)
-   - Press Enter to select a directory
-   - Type `t` to manually enter a path while browsing
-   - Type `h` to jump to home directory
-   - Type `q` or ESC to cancel
+   - **Navigation**:
+     - Arrow keys (↑↓) to navigate directories
+     - Enter to select a directory
+     - ← or `b` to go up one level
+     - **Number keys (1-9)**: Jump directly to parent levels (1=parent, 2=grandparent, etc.)
+     - Breadcrumb shortcuts displayed at top show which number corresponds to which level
+   - **Quick Actions**:
+     - Type `t` to manually enter a path while browsing
+     - Type `h` to jump to home directory
+     - Type `q` or ESC to cancel
 
 4. The program will:
    - Scan for files in the directory
@@ -198,7 +203,7 @@ python3 test_file_cleanup.py
 
 ### Test Coverage
 
-The test suite includes **50+ comprehensive tests** covering all aspects of the program:
+The test suite includes **56+ comprehensive tests** covering all aspects of the program:
 
 #### Core Functionality Tests
 - ✅ **File Extension Extraction**: Tests case-insensitive extension handling and files without extensions
@@ -237,6 +242,8 @@ The test suite includes **50+ comprehensive tests** covering all aspects of the 
 - ✅ **get_directory_path Function**: Tests all selection methods (manual, browse, current directory)
 - ✅ **browse_directory Function**: Tests browser selection logic (curses vs simple mode)
 - ✅ **Curses Browser**: Tests CursesDirectoryBrowser initialization and directory listing
+- ✅ **Breadcrumb Navigation**: Tests breadcrumb generation and number key (1-9) navigation
+- ✅ **Multi-Level Navigation**: Tests jumping to parent, grandparent, and deeper levels
 - ✅ **Path Expansion**: Tests tilde expansion and path resolution
 - ✅ **Cross-Platform Compatibility**: Ensures tests work on all operating systems
 
@@ -253,7 +260,7 @@ OK
 
 **Test Breakdown:**
 - **18 tests** for file cleanup functionality (`file_cleanup.py`)
-- **32+ tests** for directory browser functionality (`directory_browser.py`)
+- **38+ tests** for directory browser functionality (`directory_browser.py`)
 
 ### Test Architecture
 

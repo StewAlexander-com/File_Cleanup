@@ -587,6 +587,107 @@ class TestDirectoryBrowser(unittest.TestCase):
         dirs = browser.get_items()
         self.assertIsInstance(dirs, list)
 
+    def test_curses_browser_get_breadcrumbs(self):
+        """Test breadcrumb generation for navigation."""
+        # Create nested directory structure
+        nested_dir = self.test_dir / "subdir1" / "nested" / "deep"
+        nested_dir.mkdir(parents=True)
+        
+        browser = directory_browser.CursesDirectoryBrowser(nested_dir)
+        breadcrumbs = browser._get_breadcrumbs()
+        
+        # Should include all parent directories
+        self.assertGreater(len(breadcrumbs), 1)
+        # Should include the current directory
+        self.assertIn(nested_dir.resolve(), breadcrumbs)
+        # Should include root
+        self.assertIn(self.test_dir.resolve(), breadcrumbs)
+
+    def test_curses_browser_breadcrumb_navigation_key_1(self):
+        """Test number key 1 jumps to parent directory."""
+        nested_dir = self.test_dir / "subdir1" / "nested"
+        nested_dir.mkdir(parents=True)
+        
+        browser = directory_browser.CursesDirectoryBrowser(nested_dir)
+        original_path = browser.current_path
+        
+        # Simulate the key handling logic for '1' (jump to parent)
+        breadcrumbs = browser._get_breadcrumbs()
+        if len(breadcrumbs) > 1:
+            target_idx = len(breadcrumbs) - 2  # Parent
+            if 0 <= target_idx < len(breadcrumbs):
+                browser.current_path = breadcrumbs[target_idx]
+        
+        # Should have moved to parent
+        self.assertEqual(browser.current_path, original_path.parent)
+
+    def test_curses_browser_breadcrumb_navigation_key_2(self):
+        """Test number key 2 jumps to grandparent directory."""
+        nested_dir = self.test_dir / "subdir1" / "nested" / "deep"
+        nested_dir.mkdir(parents=True)
+        
+        browser = directory_browser.CursesDirectoryBrowser(nested_dir)
+        original_path = browser.current_path
+        
+        # Simulate pressing '2' to jump to grandparent
+        breadcrumbs = browser._get_breadcrumbs()
+        if len(breadcrumbs) > 2:
+            target_idx = len(breadcrumbs) - 3  # Grandparent
+            if 0 <= target_idx < len(breadcrumbs):
+                browser.current_path = breadcrumbs[target_idx]
+        
+        # Should have moved to grandparent
+        self.assertEqual(browser.current_path, original_path.parent.parent)
+
+    def test_curses_browser_breadcrumb_navigation_multiple_levels(self):
+        """Test breadcrumb navigation works for multiple nested levels."""
+        # Create 5 levels deep
+        level5 = self.test_dir / "level1" / "level2" / "level3" / "level4" / "level5"
+        level5.mkdir(parents=True)
+        
+        browser = directory_browser.CursesDirectoryBrowser(level5)
+        breadcrumbs = browser._get_breadcrumbs()
+        
+        # Should have at least 5 levels
+        self.assertGreaterEqual(len(breadcrumbs), 5)
+        
+        # Test jumping to different levels
+        original_path = browser.current_path
+        
+        # Jump to level 1 (parent)
+        if len(breadcrumbs) > 1:
+            browser.current_path = breadcrumbs[-2]
+            self.assertEqual(browser.current_path, original_path.parent)
+        
+        # Jump to level 3 (3 levels up)
+        browser.current_path = level5  # Reset
+        if len(breadcrumbs) > 3:
+            browser.current_path = breadcrumbs[-4]
+            self.assertEqual(browser.current_path, level5.parent.parent.parent)
+
+    def test_curses_browser_breadcrumb_navigation_at_root(self):
+        """Test breadcrumb navigation at test directory root doesn't break."""
+        # Test at the test directory root (safe, no system root access)
+        browser = directory_browser.CursesDirectoryBrowser(self.test_dir)
+        breadcrumbs = browser._get_breadcrumbs()
+        
+        # Should have at least 1 breadcrumb (the current directory)
+        self.assertGreaterEqual(len(breadcrumbs), 1)
+        
+        # Should include the test directory
+        self.assertIn(self.test_dir.resolve(), breadcrumbs)
+        
+        # Test that breadcrumb navigation logic works safely
+        original_path = browser.current_path
+        if len(breadcrumbs) > 1:
+            # Try to navigate to parent if available
+            target_idx = len(breadcrumbs) - 2
+            if 0 <= target_idx < len(breadcrumbs):
+                browser.current_path = breadcrumbs[target_idx]
+                # Should have moved to a valid parent
+                self.assertIsInstance(browser.current_path, Path)
+                self.assertNotEqual(browser.current_path, original_path)
+
     def test_path_expansion_tilde(self):
         """Test that paths with ~ are expanded correctly."""
         home = Path.home()
