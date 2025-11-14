@@ -1,6 +1,8 @@
 # Test artifacts
 file_cleanup_test_*/
+dir_browser_test_*/
 test_*/
+*_test_*/
 
 # Python cache
 __pycache__/

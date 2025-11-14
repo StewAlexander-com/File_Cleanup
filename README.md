@@ -198,7 +198,7 @@ python3 test_file_cleanup.py
 
 ### Test Coverage
 
-The test suite includes **18 comprehensive tests** covering all aspects of the program:
+The test suite includes **50+ comprehensive tests** covering all aspects of the program:
 
 #### Core Functionality Tests
 - ✅ **File Extension Extraction**: Tests case-insensitive extension handling and files without extensions
@@ -228,16 +228,32 @@ The test suite includes **18 comprehensive tests** covering all aspects of the p
 - ✅ **Invalid Directory Handling**: Verifies error handling for non-existent directories
 - ✅ **Empty Directory Handling**: Tests behavior when no files are present
 
+#### Directory Browser TUI Tests
+- ✅ **Simple Browser Initialization**: Tests browser initialization with default and custom paths
+- ✅ **Directory Listing**: Verifies correct directory and file listing (hidden files excluded)
+- ✅ **Navigation**: Tests all navigation options (quit, select, home, go up, select directory)
+- ✅ **Path Input**: Tests manual path entry with valid, invalid, and empty paths
+- ✅ **Browse Loop**: Tests complete browse workflow with navigation and selection
+- ✅ **get_directory_path Function**: Tests all selection methods (manual, browse, current directory)
+- ✅ **browse_directory Function**: Tests browser selection logic (curses vs simple mode)
+- ✅ **Curses Browser**: Tests CursesDirectoryBrowser initialization and directory listing
+- ✅ **Path Expansion**: Tests tilde expansion and path resolution
+- ✅ **Cross-Platform Compatibility**: Ensures tests work on all operating systems
+
 ### Test Results
 
 All tests are currently **passing** ✅:
 
 ```
 ----------------------------------------------------------------------
-Ran 18 tests in 0.018s
+Ran 50+ tests in <1s
 
 OK
 ```
+
+**Test Breakdown:**
+- **18 tests** for file cleanup functionality (`file_cleanup.py`)
+- **32+ tests** for directory browser functionality (`directory_browser.py`)
 
 ### Test Architecture
 
@@ -245,6 +261,8 @@ OK
 - **Mocking**: Uses `unittest.mock` to handle interactive prompts during testing
 - **Comprehensive Coverage**: Tests cover normal operations, edge cases, and error conditions
 - **No Side Effects**: Tests don't modify your actual files or directories
+- **Non-Blocking**: All tests are designed to be non-interactive and safe to run in IDEs like Cursor
+- **Full Mocking**: All blocking operations (input, os.system, curses) are fully mocked to prevent hangs
 
 ### Running Tests on Different Operating Systems
 

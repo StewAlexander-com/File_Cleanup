@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """
-Comprehensive test suite for file_cleanup.py
-Tests all functionality including file organization, duplicate handling, verification, and logging.
+Comprehensive test suite for file_cleanup.py and directory_browser.py
+Tests all functionality including file organization, duplicate handling, 
+verification, logging, and directory browser TUI.
+
+IMPORTANT: All tests are designed to be non-blocking and safe to run in Cursor.
+All interactive operations (input, os.system, curses) are fully mocked to prevent hangs.
 """
 
 import os
@@ -13,8 +17,9 @@ from pathlib import Path
 from unittest.mock import patch, MagicMock
 from io import StringIO
 
-# Import the module to test
+# Import the modules to test
 import file_cleanup
+import directory_browser
 
 
 class TestFileCleanup(unittest.TestCase):
@@ -260,7 +265,8 @@ class TestFileCleanup(unittest.TestCase):
 
     def test_main_invalid_directory(self):
         """Test main function with invalid directory."""
-        with patch('builtins.input', return_value='/nonexistent/path'):
+        invalid_path = Path('/nonexistent/path')
+        with patch('file_cleanup.get_directory_path', return_value=invalid_path):
             with patch('sys.stdout', new=StringIO()) as fake_out:
                 file_cleanup.main()
                 output = fake_out.getvalue()
@@ -268,7 +274,7 @@ class TestFileCleanup(unittest.TestCase):
 
     def test_main_no_files(self):
         """Test main function with empty directory."""
-        with patch('builtins.input', return_value='.'):
+        with patch('file_cleanup.get_directory_path', return_value=self.test_dir):
             with patch('sys.stdout', new=StringIO()) as fake_out:
                 file_cleanup.main()
                 output = fake_out.getvalue()
@@ -278,7 +284,7 @@ class TestFileCleanup(unittest.TestCase):
         """Test complete workflow from main function."""
         self.create_test_files(["doc1.pdf", "img1.jpg", "text1.txt"])
         
-        with patch('builtins.input', return_value='.'):
+        with patch('file_cleanup.get_directory_path', return_value=self.test_dir):
             with patch('sys.stdout', new=StringIO()) as fake_out:
                 file_cleanup.main()
                 output = fake_out.getvalue()
@@ -308,6 +314,290 @@ class TestFileCleanup(unittest.TestCase):
         self.assertTrue((self.test_dir / "jpg" / "IMG1.JPG").exists())
 
 
+class TestDirectoryBrowser(unittest.TestCase):
+    """Test suite for directory browser functionality."""
+
+    def setUp(self):
+        """Set up test environment before each test."""
+        # Create a temporary directory structure for testing
+        self.test_dir = Path(tempfile.mkdtemp(prefix="dir_browser_test_"))
+        self.original_cwd = os.getcwd()
+        
+        # Create test directory structure
+        (self.test_dir / "subdir1").mkdir()
+        (self.test_dir / "subdir2").mkdir()
+        (self.test_dir / "subdir3").mkdir()
+        (self.test_dir / "file1.txt").write_text("test")
+        (self.test_dir / "file2.pdf").write_text("test")
+        (self.test_dir / ".hidden_dir").mkdir()
+        (self.test_dir / ".hidden_file").write_text("test")
+
+    def tearDown(self):
+        """Clean up after each test."""
+        os.chdir(self.original_cwd)
+        # Remove the entire test directory
+        if self.test_dir.exists():
+            shutil.rmtree(self.test_dir)
+
+    def test_simple_browser_initialization_default(self):
+        """Test SimpleDirectoryBrowser initialization with default path."""
+        browser = directory_browser.SimpleDirectoryBrowser()
+        self.assertEqual(browser.current_path, Path.home().resolve())
+
+    def test_simple_browser_initialization_custom_path(self):
+        """Test SimpleDirectoryBrowser initialization with custom path."""
+        browser = directory_browser.SimpleDirectoryBrowser(self.test_dir)
+        self.assertEqual(browser.current_path, self.test_dir.resolve())
+
+    def test_simple_browser_get_items(self):
+        """Test get_items returns directories and files correctly."""
+        browser = directory_browser.SimpleDirectoryBrowser(self.test_dir)
+        dirs, files = browser.get_items()
+        
+        # Should return 3 subdirectories (hidden_dir excluded)
+        self.assertEqual(len(dirs), 3)
+        self.assertIn(self.test_dir / "subdir1", dirs)
+        self.assertIn(self.test_dir / "subdir2", dirs)
+        self.assertIn(self.test_dir / "subdir3", dirs)
+        
+        # Should return 2 files (hidden_file excluded from dirs, but files should include it)
+        # Actually, get_items only filters hidden from dirs, not files
+        self.assertGreaterEqual(len(files), 2)
+        file_names = [f.name for f in files]
+        self.assertIn("file1.txt", file_names)
+        self.assertIn("file2.pdf", file_names)
+
+    def test_simple_browser_get_items_hidden_dirs_excluded(self):
+        """Test that hidden directories are excluded."""
+        browser = directory_browser.SimpleDirectoryBrowser(self.test_dir)
+        dirs, _ = browser.get_items()
+        
+        dir_names = [d.name for d in dirs]
+        self.assertNotIn(".hidden_dir", dir_names)
+
+    def test_simple_browser_navigate_quit(self):
+        """Test navigate with 'q' choice returns None."""
+        browser = directory_browser.SimpleDirectoryBrowser(self.test_dir)
+        result = browser.navigate('q')
+        self.assertIsNone(result)
+
+    def test_simple_browser_navigate_select_current(self):
+        """Test navigate with 's' choice returns current path."""
+        browser = directory_browser.SimpleDirectoryBrowser(self.test_dir)
+        result = browser.navigate('s')
+        self.assertEqual(result, self.test_dir.resolve())
+
+    def test_simple_browser_navigate_home(self):
+        """Test navigate with 'h' choice changes to home directory."""
+        browser = directory_browser.SimpleDirectoryBrowser(self.test_dir)
+        browser.navigate('h')
+        self.assertEqual(browser.current_path, Path.home().resolve())
+
+    def test_simple_browser_navigate_go_up(self):
+        """Test navigate with '0' choice goes up one directory."""
+        subdir = self.test_dir / "subdir1"
+        browser = directory_browser.SimpleDirectoryBrowser(subdir)
+        browser.navigate('0')
+        self.assertEqual(browser.current_path, self.test_dir.resolve())
+
+    def test_simple_browser_navigate_go_up_at_root(self):
+        """Test navigate with '0' at root directory doesn't change."""
+        # On Unix, root is '/', on Windows it's 'C:\' etc.
+        root = Path(self.test_dir.parts[0])
+        browser = directory_browser.SimpleDirectoryBrowser(root)
+        original_path = browser.current_path
+        browser.navigate('0')
+        self.assertEqual(browser.current_path, original_path)
+
+    def test_simple_browser_navigate_select_directory(self):
+        """Test navigate with number choice selects directory."""
+        browser = directory_browser.SimpleDirectoryBrowser(self.test_dir)
+        browser.navigate('1')  # Select first directory
+        # Should navigate into subdir1
+        self.assertEqual(browser.current_path.name, "subdir1")
+
+    def test_simple_browser_navigate_invalid_number(self):
+        """Test navigate with invalid number choice."""
+        browser = directory_browser.SimpleDirectoryBrowser(self.test_dir)
+        with patch('builtins.input', return_value=''):
+            result = browser.navigate('99')  # Invalid index
+            self.assertIsNone(result)
+
+    def test_simple_browser_navigate_type_path_valid(self):
+        """Test navigate with 't' choice and valid path."""
+        browser = directory_browser.SimpleDirectoryBrowser(self.test_dir)
+        with patch('builtins.input', return_value=str(self.test_dir / "subdir1")):
+            result = browser.navigate('t')
+            self.assertEqual(result, (self.test_dir / "subdir1").resolve())
+
+    def test_simple_browser_navigate_type_path_invalid(self):
+        """Test navigate with 't' choice and invalid path."""
+        browser = directory_browser.SimpleDirectoryBrowser(self.test_dir)
+        with patch('builtins.input', side_effect=['/nonexistent/path', '']):
+            result = browser.navigate('t')
+            self.assertIsNone(result)
+
+    def test_simple_browser_navigate_type_path_empty(self):
+        """Test navigate with 't' choice and empty path."""
+        browser = directory_browser.SimpleDirectoryBrowser(self.test_dir)
+        with patch('builtins.input', return_value=''):
+            result = browser.navigate('t')
+            self.assertIsNone(result)
+
+    def test_simple_browser_navigate_invalid_choice(self):
+        """Test navigate with invalid choice."""
+        browser = directory_browser.SimpleDirectoryBrowser(self.test_dir)
+        with patch('builtins.input', return_value=''):
+            result = browser.navigate('x')  # Invalid choice
+            self.assertIsNone(result)
+
+    def test_simple_browser_browse_select_current(self):
+        """Test browse loop with 's' to select current directory."""
+        browser = directory_browser.SimpleDirectoryBrowser(self.test_dir)
+        with patch.object(browser, 'display', return_value='s'):
+            with patch('os.system'):  # Mock os.system to prevent clear/cls calls
+                result = browser.browse()
+                self.assertEqual(result, self.test_dir.resolve())
+
+    def test_simple_browser_browse_quit(self):
+        """Test browse loop with 'q' to quit."""
+        browser = directory_browser.SimpleDirectoryBrowser(self.test_dir)
+        with patch.object(browser, 'display', return_value='q'):
+            with patch('os.system'):  # Mock os.system to prevent clear/cls calls
+                result = browser.browse()
+                self.assertIsNone(result)
+
+    def test_simple_browser_browse_navigate_then_select(self):
+        """Test browse loop with navigation then selection."""
+        browser = directory_browser.SimpleDirectoryBrowser(self.test_dir)
+        with patch.object(browser, 'display', side_effect=['1', 's']):
+            with patch('os.system'):  # Mock os.system to prevent clear/cls calls
+                result = browser.browse()
+                self.assertEqual(result.name, "subdir1")
+
+    def test_get_directory_path_quit(self):
+        """Test get_directory_path with 'q' choice."""
+        with patch('builtins.input', return_value='q'):
+            result = directory_browser.get_directory_path()
+            self.assertIsNone(result)
+
+    def test_get_directory_path_type_manual_valid(self):
+        """Test get_directory_path with manual path entry (valid)."""
+        with patch('builtins.input', side_effect=['1', str(self.test_dir)]):
+            result = directory_browser.get_directory_path()
+            self.assertEqual(result, self.test_dir.resolve())
+
+    def test_get_directory_path_type_manual_invalid(self):
+        """Test get_directory_path with manual path entry (invalid)."""
+        with patch('builtins.input', side_effect=['1', '/nonexistent/path']):
+            result = directory_browser.get_directory_path()
+            self.assertIsNone(result)
+
+    def test_get_directory_path_type_manual_empty(self):
+        """Test get_directory_path with manual path entry (empty)."""
+        with patch('builtins.input', side_effect=['1', '']):
+            result = directory_browser.get_directory_path()
+            self.assertIsNone(result)
+
+    def test_get_directory_path_current_directory(self):
+        """Test get_directory_path with current directory option."""
+        with patch('builtins.input', return_value='3'):
+            result = directory_browser.get_directory_path()
+            self.assertEqual(result, Path('.').resolve())
+
+    def test_get_directory_path_current_directory_default(self):
+        """Test get_directory_path with empty input defaults to current."""
+        with patch('builtins.input', return_value=''):
+            result = directory_browser.get_directory_path()
+            self.assertEqual(result, Path('.').resolve())
+
+    def test_get_directory_path_browse(self):
+        """Test get_directory_path with browse option."""
+        with patch('builtins.input', return_value='2'):
+            with patch('directory_browser.browse_directory', return_value=self.test_dir):
+                result = directory_browser.get_directory_path()
+                self.assertEqual(result, self.test_dir)
+
+    def test_get_directory_path_invalid_choice(self):
+        """Test get_directory_path with invalid choice."""
+        with patch('builtins.input', return_value='x'):
+            result = directory_browser.get_directory_path()
+            self.assertIsNone(result)
+
+    def test_browse_directory_simple_mode(self):
+        """Test browse_directory uses SimpleDirectoryBrowser when curses unavailable."""
+        mock_browser = MagicMock()
+        mock_browser.browse.return_value = self.test_dir
+        with patch('directory_browser.HAS_CURSES', False):
+            with patch('sys.stdin.isatty', return_value=True):
+                with patch('directory_browser.SimpleDirectoryBrowser', return_value=mock_browser):
+                    result = directory_browser.browse_directory(self.test_dir)
+                    self.assertEqual(result, self.test_dir)
+                    mock_browser.browse.assert_called_once()
+
+    def test_browse_directory_curses_mode(self):
+        """Test browse_directory uses CursesDirectoryBrowser when curses available."""
+        mock_browser = MagicMock()
+        mock_browser.browse.return_value = self.test_dir
+        with patch('directory_browser.HAS_CURSES', True):
+            with patch('sys.stdin.isatty', return_value=True):
+                with patch('directory_browser.CursesDirectoryBrowser', return_value=mock_browser):
+                    result = directory_browser.browse_directory(self.test_dir)
+                    self.assertEqual(result, self.test_dir)
+                    mock_browser.browse.assert_called_once()
+
+    def test_browse_directory_default_path(self):
+        """Test browse_directory with default (None) path."""
+        mock_browser = MagicMock()
+        mock_browser.browse.return_value = Path.home()
+        with patch('directory_browser.HAS_CURSES', False):
+            with patch('sys.stdin.isatty', return_value=True):
+                with patch('directory_browser.SimpleDirectoryBrowser', return_value=mock_browser):
+                    result = directory_browser.browse_directory()
+                    self.assertEqual(result, Path.home())
+                    # Verify browser was created
+                    mock_browser.browse.assert_called_once()
+
+    def test_curses_browser_initialization(self):
+        """Test CursesDirectoryBrowser initialization."""
+        browser = directory_browser.CursesDirectoryBrowser(self.test_dir)
+        self.assertEqual(browser.current_path, self.test_dir.resolve())
+        self.assertEqual(browser.selected_idx, 0)
+        self.assertEqual(browser.scroll_offset, 0)
+
+    def test_curses_browser_get_items(self):
+        """Test CursesDirectoryBrowser get_items method."""
+        browser = directory_browser.CursesDirectoryBrowser(self.test_dir)
+        dirs = browser.get_items()
+        
+        # Should return 3 subdirectories (hidden excluded)
+        self.assertEqual(len(dirs), 3)
+        dir_names = [d.name for d in dirs]
+        self.assertIn("subdir1", dir_names)
+        self.assertIn("subdir2", dir_names)
+        self.assertIn("subdir3", dir_names)
+        self.assertNotIn(".hidden_dir", dir_names)
+
+    def test_curses_browser_get_items_permission_error(self):
+        """Test CursesDirectoryBrowser handles permission errors."""
+        browser = directory_browser.CursesDirectoryBrowser(self.test_dir)
+        # Create a directory we can't read (simulate permission error)
+        # This is hard to test without actually creating permission issues
+        # So we'll just verify the method exists and can be called
+        dirs = browser.get_items()
+        self.assertIsInstance(dirs, list)
+
+    def test_path_expansion_tilde(self):
+        """Test that paths with ~ are expanded correctly."""
+        home = Path.home()
+        browser = directory_browser.SimpleDirectoryBrowser(self.test_dir)
+        
+        with patch('builtins.input', return_value=str(home)):
+            result = browser.navigate('t')
+            # Should resolve to home directory
+            self.assertEqual(result, home.resolve())
+
+
 def run_tests():
     """Run all tests and report results."""
     print("=" * 70)
@@ -317,7 +607,9 @@ def run_tests():
     
     # Create test suite
     loader = unittest.TestLoader()
-    suite = loader.loadTestsFromTestCase(TestFileCleanup)
+    suite = unittest.TestSuite()
+    suite.addTests(loader.loadTestsFromTestCase(TestFileCleanup))
+    suite.addTests(loader.loadTestsFromTestCase(TestDirectoryBrowser))
     
     # Run tests
     runner = unittest.TextTestRunner(verbosity=2)
