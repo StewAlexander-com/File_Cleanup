@@ -162,6 +162,86 @@ Downloads/
 └── organization_log.txt
 ```
 
+## Testing
+
+The project includes a comprehensive test suite to ensure reliability and correctness of all functionality.
+
+### Running Tests
+
+To run the complete test suite:
+
+```bash
+python3 test_file_cleanup.py
+```
+
+**Note**: On Windows, use `python` instead of `python3`.
+
+### Test Coverage
+
+The test suite includes **18 comprehensive tests** covering all aspects of the program:
+
+#### Core Functionality Tests
+- ✅ **File Extension Extraction**: Tests case-insensitive extension handling and files without extensions
+- ✅ **Basic File Organization**: Verifies files are correctly sorted into extension-based folders
+- ✅ **No Extension Handling**: Ensures files without extensions go into `no_extension/` folder
+- ✅ **Hidden Files**: Confirms hidden files (starting with `.`) are properly ignored
+- ✅ **Case-Insensitive Extensions**: Tests that `.PDF`, `.pdf`, and `.Pdf` all go to the same folder
+
+#### Duplicate Handling Tests
+- ✅ **Overwrite Option**: Tests interactive overwrite when duplicates are found
+- ✅ **Copy Creation**: Verifies automatic copy naming (`_copy1`, `_copy2`, etc.)
+- ✅ **Multiple Copies**: Tests sequential copy generation when multiple copies exist
+
+#### Advanced Features Tests
+- ✅ **Existing Folders**: Verifies reuse of pre-existing extension folders
+- ✅ **Organization Verification**: Tests detection of correctly and incorrectly organized files
+- ✅ **Top-Level File Detection**: Ensures verification catches misplaced files
+- ✅ **Log File Handling**: Confirms log files are allowed in top-level directory
+
+#### Logging Tests
+- ✅ **Log Creation**: Verifies log file is created with correct format
+- ✅ **Log Appending**: Tests that multiple runs append to log rather than overwrite
+- ✅ **Log Content**: Validates log includes all required information (timestamps, file lists, folder status)
+
+#### Integration Tests
+- ✅ **Complete Workflow**: Tests end-to-end execution from main function
+- ✅ **Invalid Directory Handling**: Verifies error handling for non-existent directories
+- ✅ **Empty Directory Handling**: Tests behavior when no files are present
+
+### Test Results
+
+All tests are currently **passing** ✅:
+
+```
+----------------------------------------------------------------------
+Ran 18 tests in 0.018s
+
+OK
+```
+
+### Test Architecture
+
+- **Isolated Testing**: Each test runs in a temporary directory that is automatically cleaned up
+- **Mocking**: Uses `unittest.mock` to handle interactive prompts during testing
+- **Comprehensive Coverage**: Tests cover normal operations, edge cases, and error conditions
+- **No Side Effects**: Tests don't modify your actual files or directories
+
+### Running Tests on Different Operating Systems
+
+The test suite is **cross-platform** and works identically on Windows, macOS, and Linux:
+
+**macOS/Linux**:
+```bash
+python3 test_file_cleanup.py
+```
+
+**Windows**:
+```bash
+python test_file_cleanup.py
+```
+
+All tests use Python's standard library and `pathlib`, ensuring consistent behavior across platforms.
+
 ## Why This Program is Useful
 
 ### Common Use Cases
@@ -191,7 +271,10 @@ Contributions are welcome! Here are ways you can help improve File Cleanup:
    ```bash
    git checkout -b feature/your-feature-name
    ```
-3. **Make your changes** and test thoroughly
+3. **Make your changes** and test thoroughly:
+   ```bash
+   python3 test_file_cleanup.py  # Verify all tests pass
+   ```
 4. **Commit your changes**:
    ```bash
    git commit -m "Add: description of your feature"
@@ -209,7 +292,7 @@ Contributions are welcome! Here are ways you can help improve File Cleanup:
 - GUI interface development
 - Performance optimizations for large directories
 - Additional logging and reporting features
-- Unit tests and test coverage
+- Additional test cases and edge case coverage
 - Documentation improvements
 
 ### Code Style
