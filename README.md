@@ -10,6 +10,7 @@ A Python utility that automatically organizes files by their extension into dedi
 - 📝 **Logging**: Maintains a detailed log of all organization activities
 - 🖥️ **Cross-Platform**: Works on Windows, macOS, and Linux
 - 🚫 **Safe**: Ignores hidden files and preserves existing folder structures
+- 📂 **Directory Browser TUI**: Interactive file browser for easy directory selection (similar to 'nnn')
 
 ## Installation
 
@@ -72,11 +73,22 @@ py -3 file_cleanup.py
 ### Usage
 
 1. Run the script using one of the methods above
-2. When prompted, enter the directory path you want to organize:
-   - Enter a full path: `/Users/username/Documents/Downloads`
-   - Enter a relative path: `./Downloads` or `../Documents`
-   - Press Enter or type `.` to use the current directory
-3. The program will:
+2. When prompted, choose how to select the directory:
+   - **[1] Type path manually**: Enter the full or relative path
+   - **[2] Browse directories**: Use the interactive directory browser (TUI)
+   - **[3] Use current directory**: Select the current working directory
+   - **[q] Cancel**: Exit the program
+
+3. **Directory Browser (Option 2)**:
+   - **macOS/Linux**: Uses `curses` for a full-screen file browser with arrow key navigation
+   - **Windows**: Uses a simple numbered menu interface
+   - Navigate with arrow keys (or numbers on Windows)
+   - Press Enter to select a directory
+   - Type `t` to manually enter a path while browsing
+   - Type `h` to jump to home directory
+   - Type `q` or ESC to cancel
+
+4. The program will:
    - Scan for files in the directory
    - Create folders based on file extensions (e.g., `pdf/`, `jpg/`, `txt/`)
    - Move files into their respective folders
@@ -90,7 +102,15 @@ py -3 file_cleanup.py
 File Organizer v1.0
 ============================================================
 
-Enter directory path to organize (or '.' for current): ./Downloads
+How would you like to select the directory?
+  [1] Type path manually
+  [2] Browse directories
+  [3] Use current directory (.)
+  [q] Cancel
+
+Enter choice: 2
+
+[Directory Browser opens - navigate with arrow keys, press Enter to select]
 
 Organizing: Downloads/
 ------------------------------------------------------------

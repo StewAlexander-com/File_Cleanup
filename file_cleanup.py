@@ -9,6 +9,7 @@ import shutil
 from pathlib import Path
 from datetime import datetime
 from collections import defaultdict
+from directory_browser import get_directory_path
 
 
 def get_file_extension(file_path: Path) -> str:
@@ -140,12 +141,12 @@ def main():
     print("File Organizer v1.0")
     print("=" * 60)
 
-    # Get target directory from user (default to current directory)
-    target = input("\nEnter directory path to organize (or '.' for current): ").strip()
-    if not target:
-        target = '.'
-
-    directory = Path(target).resolve()
+    # Get target directory from user using TUI browser or manual input
+    directory = get_directory_path()
+    
+    if directory is None:
+        print("\n⚠ Cancelled by user")
+        return
 
     # Validate directory exists before proceeding
     if not directory.exists() or not directory.is_dir():
