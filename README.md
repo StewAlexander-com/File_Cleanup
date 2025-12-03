@@ -11,6 +11,9 @@ A Python utility that automatically organizes files by their extension into dedi
 - 🖥️ **Cross-Platform**: Works on Windows, macOS, and Linux
 - 🚫 **Safe**: Ignores hidden files and preserves existing folder structures
 - 📂 **Directory Browser TUI**: Interactive file browser for easy directory selection (similar to 'nnn')
+- ⌨️ **Command-Line Support**: Pass directory paths directly as arguments
+- 🔍 **Partial Path Matching**: Find directories by partial name or path
+- 🎯 **Simplified Interface**: Quick directory selection with smart defaults
 
 ## Installation
 
@@ -43,41 +46,96 @@ A Python utility that automatically organizes files by their extension into dedi
 
 ## How to Run
 
+### Command-Line Usage (Recommended)
+
+You can now pass the directory path directly as a command-line argument:
+
+```bash
+# Full path
+python3 file_cleanup.py /path/to/directory
+
+# Partial path (searches for directories containing the string)
+python3 file_cleanup.py Downloads
+
+# Home directory shortcut
+python3 file_cleanup.py ~/Documents
+
+# Interactive mode (no arguments)
+python3 file_cleanup.py
+```
+
+**Examples**:
+```bash
+# Organize Downloads folder
+python3 file_cleanup.py ~/Downloads
+
+# Organize current directory
+python3 file_cleanup.py .
+
+# Find and organize a directory by partial name
+python3 file_cleanup.py MyProject
+```
+
+### Interactive Mode
+
+If you run without arguments, you'll be prompted for the directory:
+
+```bash
+python3 file_cleanup.py
+```
+
+You'll see:
+```
+Enter directory path (or press Enter for current directory):
+Path: 
+```
+
+- **Enter a path**: Type full or partial path (e.g., `Downloads`, `/Users/name/Documents`)
+- **Press Enter**: Uses current directory
+- **Path not found**: Option to browse directories or cancel
+
 ### macOS and Linux
 
 **Method 1: Direct execution** (if made executable):
 ```bash
-./file_cleanup.py
+./file_cleanup.py [directory]
 ```
 
 **Method 2: Using Python interpreter**:
 ```bash
-python3 file_cleanup.py
+python3 file_cleanup.py [directory]
 ```
 
 ### Windows
 
 **Method 1: Using Python launcher**:
 ```bash
-python file_cleanup.py
+python file_cleanup.py [directory]
 ```
 
 **Method 2: Using Python 3 explicitly**:
 ```bash
-py -3 file_cleanup.py
+py -3 file_cleanup.py [directory]
 ```
 
 **Method 3: Double-click** (if Python is associated with `.py` files):
 - Simply double-click `file_cleanup.py` in File Explorer
 
-### Usage
+### Advanced Usage
 
-1. Run the script using one of the methods above
-2. When prompted, choose how to select the directory:
-   - **[1] Type path manually**: Enter the full or relative path
-   - **[2] Browse directories**: Use the interactive directory browser (TUI)
-   - **[3] Use current directory**: Select the current working directory
-   - **[q] Cancel**: Exit the program
+1. **Command-line argument**: Pass directory path directly
+   ```bash
+   python3 file_cleanup.py /path/to/organize
+   ```
+
+2. **Partial path matching**: The program will search for directories matching your input
+   ```bash
+   python3 file_cleanup.py Downloads  # Finds any directory with "Downloads" in the name
+   ```
+
+3. **Interactive mode**: Run without arguments for guided selection
+   - Enter path manually or press Enter for current directory
+   - If path not found, option to browse directories
 
 3. **Directory Browser (Option 2)**:
    - **macOS/Linux**: Uses `curses` for a full-screen file browser with arrow key navigation
@@ -102,28 +160,22 @@ py -3 file_cleanup.py
    - Verify the organization
    - Create/update a log file
 
-### Example Session
+### Example Sessions
 
-```
+**Example 1: Command-Line Usage**
+```bash
+$ python3 file_cleanup.py ~/Downloads
+
 File Organizer v1.0
 ============================================================
-
-How would you like to select the directory?
-  [1] Type path manually
-  [2] Browse directories
-  [3] Use current directory (.)
-  [q] Cancel
-
-Enter choice: 2
-
-[Directory Browser opens - navigate with arrow keys, press Enter to select]
+✓ Found directory: /Users/username/Downloads
 
 Organizing: Downloads/
 ------------------------------------------------------------
 ✓ Created: pdf/
   → document1.pdf
   → report.pdf
-→ Using: jpg/
+✓ Created: jpg/
   → photo.jpg
   → image.jpg
 
@@ -137,6 +189,53 @@ Organizing: Downloads/
 
 ============================================================
 ✓ Organization complete
+```
+
+**Example 2: Partial Path Matching**
+```bash
+$ python3 file_cleanup.py Downloads
+
+File Organizer v1.0
+============================================================
+✓ Found directory: /Users/username/Downloads
+
+Organizing: Downloads/
+...
+```
+
+**Example 3: Interactive Mode**
+```bash
+$ python3 file_cleanup.py
+
+File Organizer v1.0
+============================================================
+
+Enter directory path (or press Enter for current directory):
+Path: MyProject
+
+✓ Found directory: /Users/username/MyProject
+
+Organizing: MyProject/
+...
+```
+
+**Example 4: Using Directory Browser (when path not found)**
+```bash
+$ python3 file_cleanup.py
+
+Enter directory path (or press Enter for current directory):
+Path: NonexistentPath
+
+✗ Could not find directory matching: NonexistentPath
+
+Would you like to:
+  [1] Try browsing directories
+  [2] Cancel
+
+Enter choice: 1
+
+[Directory Browser opens - navigate with arrow keys, press Enter to select]
+...
 ```
 
 ## What the Program Does
@@ -190,11 +289,11 @@ Downloads/
 
 ## Testing
 
-The project includes a comprehensive test suite to ensure reliability and correctness of all functionality.
+The project includes a simplified, focused test suite that verifies core functionality with real mock files.
 
 ### Running Tests
 
-To run the complete test suite:
+To run the test suite:
 
 ```bash
 python3 test_file_cleanup.py
@@ -204,51 +303,25 @@ python3 test_file_cleanup.py
 
 ### Test Coverage
 
-The test suite includes **59+ comprehensive tests** covering all aspects of the program:
+The test suite includes **9 focused tests** covering core functionality:
 
 #### Core Functionality Tests
-- ✅ **File Extension Extraction**: Tests case-insensitive extension handling and files without extensions
-- ✅ **Basic File Organization**: Verifies files are correctly sorted into extension-based folders
+- ✅ **Folder Creation**: Verifies extension-based folders are created correctly
+- ✅ **File Organization**: Tests that files are moved to correct extension folders
+- ✅ **Case-Insensitive Extensions**: Tests that `.PDF`, `.pdf`, and `.Pdf` all go to the same folder
 - ✅ **No Extension Handling**: Ensures files without extensions go into `no_extension/` folder
 - ✅ **Hidden Files**: Confirms hidden files (starting with `.`) are properly ignored
-- ✅ **Case-Insensitive Extensions**: Tests that `.PDF`, `.pdf`, and `.Pdf` all go to the same folder
 
 #### Duplicate Handling Tests
-- ✅ **Overwrite Option**: Tests interactive overwrite when duplicates are found
-- ✅ **Copy Creation**: Verifies automatic copy naming (`_copy1`, `_copy2`, etc.)
-- ✅ **Multiple Copies**: Tests sequential copy generation when multiple copies exist
+- ✅ **Copy Creation**: Verifies automatic copy naming (`_copy1`, `_copy2`, etc.) when duplicates exist
 
-#### Advanced Features Tests
-- ✅ **Existing Folders**: Verifies reuse of pre-existing extension folders
-- ✅ **Organization Verification**: Tests detection of correctly and incorrectly organized files
-- ✅ **Top-Level File Detection**: Ensures verification catches misplaced files
-- ✅ **Log File Handling**: Confirms log files are allowed in top-level directory
-
-#### Logging Tests
-- ✅ **Log Creation**: Verifies log file is created with correct format
-- ✅ **Log Appending**: Tests that multiple runs append to log rather than overwrite
-- ✅ **Log Content**: Validates log includes all required information (timestamps, file lists, folder status)
+#### Verification and Logging Tests
+- ✅ **Organization Verification**: Tests detection of correctly organized files
+- ✅ **Log Creation**: Verifies log file is created with correct format and content
 
 #### Integration Tests
-- ✅ **Complete Workflow**: Tests end-to-end execution from main function
-- ✅ **Invalid Directory Handling**: Verifies error handling for non-existent directories
-- ✅ **Empty Directory Handling**: Tests behavior when no files are present
-
-#### Directory Browser TUI Tests
-- ✅ **Simple Browser Initialization**: Tests browser initialization with default and custom paths
-- ✅ **Directory Listing**: Verifies correct directory and file listing (hidden files excluded)
-- ✅ **Navigation**: Tests all navigation options (quit, select, home, go up, select directory)
-- ✅ **Path Input**: Tests manual path entry with valid, invalid, and empty paths
-- ✅ **Browse Loop**: Tests complete browse workflow with navigation and selection
-- ✅ **get_directory_path Function**: Tests all selection methods (manual, browse, current directory)
-- ✅ **browse_directory Function**: Tests browser selection logic (curses vs simple mode)
-- ✅ **Curses Browser**: Tests CursesDirectoryBrowser initialization and directory listing
-- ✅ **Breadcrumb Navigation**: Tests breadcrumb generation and number key (1-9) navigation
-- ✅ **Multi-Level Navigation**: Tests jumping to parent, grandparent, and deeper levels
-- ✅ **Navigate Into Directories**: Tests Enter key navigation into subdirectories
-- ✅ **Select Current Directory**: Tests 's' key to select current directory
-- ✅ **Path Expansion**: Tests tilde expansion and path resolution
-- ✅ **Cross-Platform Compatibility**: Ensures tests work on all operating systems
+- ✅ **Main Function**: Tests end-to-end execution with command-line arguments
+- ✅ **Interactive Mode**: Tests main function in interactive mode (no arguments)
 
 ### Test Results
 
@@ -256,23 +329,25 @@ All tests are currently **passing** ✅:
 
 ```
 ----------------------------------------------------------------------
-Ran 50+ tests in <1s
+Ran 9 tests in 0.072s
 
 OK
 ```
 
-**Test Breakdown:**
-- **18 tests** for file cleanup functionality (`file_cleanup.py`)
-- **41+ tests** for directory browser functionality (`directory_browser.py`)
+**Test Features:**
+- Creates mock files with various extensions automatically
+- Tests real file organization in isolated temporary directories
+- Verifies all core functionality works correctly
+- Fast execution with no hanging or blocking operations
 
 ### Test Architecture
 
 - **Isolated Testing**: Each test runs in a temporary directory that is automatically cleaned up
+- **Mock Files**: Automatically creates 17+ mock files with various extensions for realistic testing
 - **Mocking**: Uses `unittest.mock` to handle interactive prompts during testing
-- **Comprehensive Coverage**: Tests cover normal operations, edge cases, and error conditions
 - **No Side Effects**: Tests don't modify your actual files or directories
-- **Non-Blocking**: All tests are designed to be non-interactive and safe to run in IDEs like Cursor
-- **Full Mocking**: All blocking operations (input, os.system, curses) are fully mocked to prevent hangs
+- **Fast Execution**: All tests complete in under 0.1 seconds
+- **Cross-Platform**: Works identically on Windows, macOS, and Linux
 
 ### Running Tests on Different Operating Systems
 
@@ -365,6 +440,14 @@ This project is open source and available for use and modification.
 
 ---
 
-**Version**: 1.0  
+**Version**: 1.1  
 **Last Updated**: 2025
+
+### Recent Updates (v1.1)
+
+- ✨ **Command-Line Arguments**: Pass directory paths directly as arguments
+- 🔍 **Partial Path Matching**: Find directories by partial name or path
+- 🎯 **Simplified Interface**: Quick directory selection with smart defaults
+- 🧪 **Refactored Tests**: Streamlined test suite with automatic mock file generation
+- 🚀 **Performance**: Faster execution and improved user experience
 

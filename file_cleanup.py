@@ -6,9 +6,11 @@ Organizes files by extension into dedicated folders with logging and duplicate h
 
 import os
 import shutil
+import argparse
 from pathlib import Path
 from datetime import datetime
 from collections import defaultdict
+from typing import Optional
 from directory_browser import get_directory_path
 
 
@@ -16,6 +18,86 @@ def get_file_extension(file_path: Path) -> str:
     """Extract lowercase extension without dot, or 'no_extension' if none."""
     ext = file_path.suffix.lower()
     return ext[1:] if ext else 'no_extension'
+
+
+def find_directory_by_partial_path(partial_path: str) -> Optional[Path]:
+    """
+    Find a directory by partial path match.
+    Tries exact match first, then searches in common locations.
+    
+    Args:
+        partial_path: Partial path string to search for
+    
+    Returns:
+        Path to found directory or None if not found
+    """
+    partial_lower = partial_path.lower()
+    
+    # First, try exact match or expanduser/resolve
+    try:
+        exact_path = Path(partial_path).expanduser().resolve()
+        if exact_path.exists() and exact_path.is_dir():
+            return exact_path
+    except Exception:
+        pass
+    
+    # Search in common locations (current directory, home, and immediate subdirectories)
+    search_locations = [
+        Path('.').resolve(),  # Current directory
+        Path.home(),  # Home directory
+    ]
+    
+    matches = []
+    
+    for location in search_locations:
+        if not location.exists():
+            continue
+        
+        try:
+            # Check if location itself matches
+            if partial_lower in str(location).lower() or partial_lower in location.name.lower():
+                matches.append(location)
+            
+            # Check immediate subdirectories (one level deep)
+            for item in location.iterdir():
+                if item.is_dir() and not item.name.startswith('.'):
+                    # Check if name matches
+                    if partial_lower in item.name.lower():
+                        matches.append(item)
+                    # Check if full path matches
+                    elif partial_lower in str(item).lower():
+                        matches.append(item)
+        except (PermissionError, OSError):
+            continue
+    
+    # If no matches in common locations, try a limited search in home directory
+    if not matches:
+        try:
+            home = Path.home()
+            # Search one level deeper in home directory
+            for item in home.iterdir():
+                if item.is_dir() and not item.name.startswith('.'):
+                    if partial_lower in item.name.lower():
+                        matches.append(item)
+                    else:
+                        # Check subdirectories one level deep
+                        try:
+                            for subitem in item.iterdir():
+                                if subitem.is_dir() and not subitem.name.startswith('.'):
+                                    if partial_lower in subitem.name.lower() or partial_lower in str(subitem).lower():
+                                        matches.append(subitem)
+                        except (PermissionError, OSError):
+                            continue
+        except (PermissionError, OSError):
+            pass
+    
+    # Return the most specific match (longest path that contains the partial)
+    if matches:
+        # Sort by path length (longest first) to get most specific match
+        matches.sort(key=lambda p: len(str(p)), reverse=True)
+        return matches[0]
+    
+    return None
 
 
 def organize_files(directory: Path) -> dict:
@@ -136,13 +218,81 @@ def create_log(directory: Path, moved_files: dict, folder_status: dict) -> None:
     print(f"\n✓ Log updated: {log_path.name}")
 
 
+def get_directory_from_args_or_input(args_path: Optional[str] = None) -> Optional[Path]:
+    """
+    Get directory path from command-line argument or user input.
+    
+    Args:
+        args_path: Directory path from command-line arguments (can be partial)
+    
+    Returns:
+        Path to directory or None if cancelled/invalid
+    """
+    if args_path:
+        # Try to find directory by partial or full path
+        directory = find_directory_by_partial_path(args_path)
+        
+        if directory:
+            print(f"✓ Found directory: {directory}")
+            return directory
+        else:
+            print(f"✗ Could not find directory matching: {args_path}")
+            print("Please try again with a more specific path or use interactive mode.")
+            return None
+    
+    # No command-line argument, use simplified interactive mode
+    print("\nEnter directory path (or press Enter for current directory):")
+    path_input = input("Path: ").strip()
+    
+    if not path_input:
+        # Default to current directory
+        directory = Path('.').resolve()
+        print(f"→ Using current directory: {directory}")
+    else:
+        # Try to find directory by partial or full path
+        directory = find_directory_by_partial_path(path_input)
+        
+        if not directory:
+            print(f"✗ Could not find directory matching: {path_input}")
+            print("\nWould you like to:")
+            print("  [1] Try browsing directories")
+            print("  [2] Cancel")
+            choice = input("\nEnter choice: ").strip().lower()
+            
+            if choice == '1':
+                directory = get_directory_path()
+            else:
+                return None
+    
+    return directory
+
+
 def main():
     """Main execution flow."""
+    parser = argparse.ArgumentParser(
+        description='File Organizer - Organizes files by extension into dedicated folders',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  %(prog)s /path/to/directory
+  %(prog)s Downloads
+  %(prog)s ~/Documents
+  %(prog)s  # Run interactively
+        """
+    )
+    parser.add_argument(
+        'directory',
+        nargs='?',
+        help='Directory path to organize (can be full or partial path)'
+    )
+    
+    args = parser.parse_args()
+    
     print("File Organizer v1.0")
     print("=" * 60)
 
-    # Get target directory from user using TUI browser or manual input
-    directory = get_directory_path()
+    # Get target directory from command-line argument or user input
+    directory = get_directory_from_args_or_input(args.directory)
     
     if directory is None:
         print("\n⚠ Cancelled by user")
