@@ -14,6 +14,8 @@ A Python utility that automatically organizes files by their extension into dedi
 - ⌨️ **Command-Line Support**: Pass directory paths directly as arguments
 - 🔍 **Partial Path Matching**: Find directories by partial name or path
 - 🎯 **Simplified Interface**: Quick directory selection with smart defaults
+- 🤖 **Fully Scriptable**: Non-interactive flags for automation and cron jobs
+- 📋 **Enhanced CLI Help**: Comprehensive help documentation with usage examples
 
 ## Installation
 
@@ -121,6 +123,35 @@ py -3 file_cleanup.py [directory]
 **Method 3: Double-click** (if Python is associated with `.py` files):
 - Simply double-click `file_cleanup.py` in File Explorer
 
+### Automation & Scripting Mode
+
+The script is fully automation-ready with non-interactive flags:
+
+```bash
+# Fully automated (for scripts, cron jobs, automation)
+python3 file_cleanup.py ~/Downloads --yes --quiet
+
+# Auto-create copies for duplicates (safe for automation)
+python3 file_cleanup.py Downloads --non-interactive
+
+# Auto-overwrite duplicates (use with caution)
+python3 file_cleanup.py Downloads --overwrite
+
+# Minimal output (useful for automation)
+python3 file_cleanup.py Downloads --quiet
+```
+
+**Available Flags**:
+- `--yes` / `--non-interactive`: Automatically create copies for duplicates (no prompts)
+- `--overwrite`: Automatically overwrite duplicate files (use with caution)
+- `--quiet`: Minimal output (useful for automation scripts)
+- `--help`: Display comprehensive help documentation
+
+**Exit Codes** (for automation):
+- `0`: Success
+- `1`: Error (invalid directory, organization failed, etc.)
+- `130`: Interrupted by user (Ctrl+C)
+
 ### Advanced Usage
 
 1. **Command-line argument**: Pass directory path directly
@@ -136,6 +167,11 @@ py -3 file_cleanup.py [directory]
 3. **Interactive mode**: Run without arguments for guided selection
    - Enter path manually or press Enter for current directory
    - If path not found, option to browse directories
+
+4. **View help**: Get comprehensive usage information
+   ```bash
+   python3 file_cleanup.py --help
+   ```
 
 3. **Directory Browser (Option 2)**:
    - **macOS/Linux**: Uses `curses` for a full-screen file browser with arrow key navigation
@@ -249,7 +285,9 @@ Enter choice: 1
 3. **File Organization**: Moves each file into its corresponding extension folder
 
 4. **Duplicate Handling**: 
-   - If a file with the same name already exists in the target folder, you'll be prompted to overwrite or create a copy
+   - **Interactive mode (default)**: Prompts for each duplicate file
+   - **Non-interactive mode (`--yes`/`--non-interactive`)**: Automatically creates copies (`file_copy1.ext`, `file_copy2.ext`, etc.)
+   - **Overwrite mode (`--overwrite`)**: Automatically overwrites existing files (use with caution)
    - Copies are automatically named with `_copy1`, `_copy2`, etc.
 
 5. **Verification**: Recursively checks that all files are in the correct folders based on their extensions
@@ -440,11 +478,18 @@ This project is open source and available for use and modification.
 
 ---
 
-**Version**: 1.1  
+**Version**: 1.2  
 **Last Updated**: 2025
 
-### Recent Updates (v1.1)
+### Recent Updates
 
+**v1.2** (Latest):
+- 🤖 **Full Scriptability**: Added `--yes`, `--non-interactive`, `--overwrite`, and `--quiet` flags
+- 📋 **Enhanced CLI Help**: Comprehensive help documentation with usage examples
+- 🔧 **Automation Ready**: Proper exit codes and non-interactive modes for cron jobs and scripts
+- 🔇 **Quiet Mode**: Minimal output option for automation pipelines
+
+**v1.1**:
 - ✨ **Command-Line Arguments**: Pass directory paths directly as arguments
 - 🔍 **Partial Path Matching**: Find directories by partial name or path
 - 🎯 **Simplified Interface**: Quick directory selection with smart defaults
