@@ -100,9 +100,15 @@ def find_directory_by_partial_path(partial_path: str) -> Optional[Path]:
     return None
 
 
-def organize_files(directory: Path) -> dict:
+def organize_files(directory: Path, non_interactive: bool = False, overwrite: bool = False) -> dict:
     """
     Organize files in directory by extension into folders.
+
+    Args:
+        directory: Directory path to organize
+        non_interactive: If True, automatically create copies instead of prompting (default: False)
+        overwrite: If True, automatically overwrite duplicates (default: False)
+                   Note: overwrite takes precedence over non_interactive
 
     Returns:
         dict: Mapping of folder names to list of files moved
@@ -130,37 +136,61 @@ def organize_files(directory: Path) -> dict:
         else:
             print(f"→ Using: {ext}/")
 
-        # Move each file, handling name conflicts interactively
+        # Move each file, handling name conflicts
         for file in files:
             destination = folder_path / file.name
 
-            # Prompt user on duplicate files, append '_copyN' if they decline overwrite
+            # Handle duplicate files based on mode
             if destination.exists():
-                response = input(f"\n⚠ '{file.name}' exists in {ext}/. Overwrite? (y/n): ").lower()
-                if response != 'y':
-                    # Generate unique filename: name_copy1.ext, name_copy2.ext, etc.
+                if overwrite:
+                    # Auto-overwrite mode
+                    print(f"  → {file.name} (overwriting existing)")
+                elif non_interactive:
+                    # Auto-create copy mode
                     stem = destination.stem
                     suffix = destination.suffix
                     copy_num = 1
                     while destination.exists():
                         destination = folder_path / f"{stem}_copy{copy_num}{suffix}"
                         copy_num += 1
+                    print(f"  → {file.name} (created {destination.name})")
+                else:
+                    # Interactive mode - prompt user
+                    response = input(f"\n⚠ '{file.name}' exists in {ext}/. Overwrite? (y/n): ").lower()
+                    if response != 'y':
+                        # Generate unique filename: name_copy1.ext, name_copy2.ext, etc.
+                        stem = destination.stem
+                        suffix = destination.suffix
+                        copy_num = 1
+                        while destination.exists():
+                            destination = folder_path / f"{stem}_copy{copy_num}{suffix}"
+                            copy_num += 1
+                        print(f"  → {file.name} (created {destination.name})")
+                    else:
+                        print(f"  → {file.name} (overwriting existing)")
+
+            else:
+                print(f"  → {file.name}")
 
             shutil.move(str(file), str(destination))
             moved_files[ext].append(destination.name)
-            print(f"  → {file.name}")
 
     return moved_files, folder_status
 
 
-def verify_organization(directory: Path) -> bool:
+def verify_organization(directory: Path, quiet: bool = False) -> bool:
     """
     Recursively verify all files are in correctly named folders.
+
+    Args:
+        directory: Directory to verify
+        quiet: If True, suppress output
 
     Returns:
         bool: True if all files are properly organized
     """
-    print("\n--- Verification ---")
+    if not quiet:
+        print("\n--- Verification ---")
     misplaced = []
 
     # Walk directory tree checking file placement
@@ -182,16 +212,18 @@ def verify_organization(directory: Path) -> bool:
 
     # Report verification results
     if misplaced:
-        print("✗ Issues found:")
-        for issue in misplaced:
-            print(f"  • {issue}")
+        if not quiet:
+            print("✗ Issues found:")
+            for issue in misplaced:
+                print(f"  • {issue}")
         return False
     else:
-        print("✓ All files organized correctly")
+        if not quiet:
+            print("✓ All files organized correctly")
         return True
 
 
-def create_log(directory: Path, moved_files: dict, folder_status: dict) -> None:
+def create_log(directory: Path, moved_files: dict, folder_status: dict, quiet: bool = False) -> None:
     """Append organization details to single log file."""
     log_path = directory / "organization_log.txt"
 
@@ -215,7 +247,8 @@ def create_log(directory: Path, moved_files: dict, folder_status: dict) -> None:
             for file in sorted(files):
                 log.write(f"  → {file}\n")
 
-    print(f"\n✓ Log updated: {log_path.name}")
+    if not quiet:
+        print(f"\n✓ Log updated: {log_path.name}")
 
 
 def get_directory_from_args_or_input(args_path: Optional[str] = None) -> Optional[Path]:
@@ -273,60 +306,139 @@ def main():
         description='File Organizer - Organizes files by extension into dedicated folders',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
-Examples:
-  %(prog)s /path/to/directory
-  %(prog)s Downloads
-  %(prog)s ~/Documents
-  %(prog)s  # Run interactively
+USAGE EXAMPLES:
+  Basic Usage:
+    %(prog)s /path/to/directory              # Organize specific directory
+    %(prog)s Downloads                       # Find and organize Downloads folder
+    %(prog)s ~/Documents                     # Organize Documents in home directory
+    %(prog)s                                 # Interactive mode (prompts for directory)
+
+  Automation/Non-Interactive Mode:
+    %(prog)s Downloads --yes                 # Auto-create copies for duplicates (scriptable)
+    %(prog)s Downloads --non-interactive     # Same as --yes
+    %(prog)s Downloads --overwrite           # Auto-overwrite duplicates (use with caution)
+    %(prog)s Downloads --quiet               # Minimal output (for scripts)
+
+  Combined Options:
+    %(prog)s ~/Downloads --yes --quiet       # Fully automated, minimal output
+
+DIRECTORY SELECTION:
+  - Full path: /Users/name/Downloads
+  - Partial path: Downloads (searches current dir and home)
+  - Home shortcut: ~/Documents
+  - Current directory: . or leave empty in interactive mode
+
+DUPLICATE HANDLING:
+  - Interactive (default): Prompts for each duplicate
+  - --yes/--non-interactive: Automatically creates copies (file_copy1.ext, etc.)
+  - --overwrite: Automatically overwrites existing files (use with caution)
+
+OUTPUT:
+  - Creates extension-based folders (pdf/, jpg/, txt/, etc.)
+  - Files without extensions go to no_extension/
+  - Generates organization_log.txt with history
+  - Verifies organization after completion
+
+For more information, visit: https://github.com/stewartalexander/File_Cleanup
         """
     )
     parser.add_argument(
         'directory',
         nargs='?',
-        help='Directory path to organize (can be full or partial path)'
+        help='Directory path to organize (full path, partial name, or ~/path)'
+    )
+    parser.add_argument(
+        '--yes',
+        action='store_true',
+        help='Non-interactive mode: automatically create copies for duplicates (scriptable)'
+    )
+    parser.add_argument(
+        '--non-interactive',
+        action='store_true',
+        dest='non_interactive',
+        help='Same as --yes: automatically create copies for duplicates'
+    )
+    parser.add_argument(
+        '--overwrite',
+        action='store_true',
+        help='Automatically overwrite duplicate files (use with caution)'
+    )
+    parser.add_argument(
+        '--quiet',
+        action='store_true',
+        help='Minimal output (useful for automation scripts)'
     )
     
     args = parser.parse_args()
     
-    print("File Organizer v1.0")
-    print("=" * 60)
+    # Determine non-interactive mode
+    non_interactive = args.yes or args.non_interactive
+    
+    if not args.quiet:
+        print("File Organizer v1.1")
+        print("=" * 60)
 
     # Get target directory from command-line argument or user input
-    directory = get_directory_from_args_or_input(args.directory)
+    # If non-interactive and no directory provided, fail
+    if not args.directory and non_interactive:
+        parser.error("Directory path required in non-interactive mode. Use --help for usage.")
+    
+    # In non-interactive mode, skip interactive prompts
+    if non_interactive and args.directory:
+        directory = find_directory_by_partial_path(args.directory)
+        if not directory:
+            if not args.quiet:
+                print(f"✗ Could not find directory matching: {args.directory}")
+            return 1
+        if not args.quiet:
+            print(f"✓ Found directory: {directory}")
+    else:
+        directory = get_directory_from_args_or_input(args.directory)
     
     if directory is None:
-        print("\n⚠ Cancelled by user")
-        return
+        if not args.quiet:
+            print("\n⚠ Cancelled by user")
+        return 1
 
     # Validate directory exists before proceeding
     if not directory.exists() or not directory.is_dir():
-        print(f"✗ Error: '{directory}' is not a valid directory")
-        return
+        if not args.quiet:
+            print(f"✗ Error: '{directory}' is not a valid directory")
+        return 1
 
-    print(f"\nOrganizing: {directory.name}/")
-    print("-" * 60)
+    if not args.quiet:
+        print(f"\nOrganizing: {directory.name}/")
+        print("-" * 60)
 
     # Step 1: Sort files into extension-based folders
-    moved_files, folder_status = organize_files(directory)
+    moved_files, folder_status = organize_files(directory, non_interactive=non_interactive, overwrite=args.overwrite)
 
     if not moved_files:
-        print("\n→ No files to organize")
-        return
+        if not args.quiet:
+            print("\n→ No files to organize")
+        return 0
 
     # Step 2: Recursively verify correct organization
-    is_organized = verify_organization(directory)
+    is_organized = verify_organization(directory, quiet=args.quiet)
 
     # Step 3: Append to single log file (maintains history)
-    create_log(directory, moved_files, folder_status)
+    create_log(directory, moved_files, folder_status, quiet=args.quiet)
 
-    print("\n" + "=" * 60)
-    print("✓ Organization complete")
+    if not args.quiet:
+        print("\n" + "=" * 60)
+        print("✓ Organization complete")
+    
+    return 0 if is_organized else 1
 
 
 if __name__ == "__main__":
+    import sys
     try:
-        main()
+        exit_code = main()
+        sys.exit(exit_code if exit_code is not None else 0)
     except KeyboardInterrupt:
         print("\n\n⚠ Cancelled by user")
+        sys.exit(130)  # Standard exit code for Ctrl+C
     except Exception as e:
         print(f"\n✗ Error: {e}")
+        sys.exit(1)
