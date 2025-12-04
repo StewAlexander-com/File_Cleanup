@@ -50,32 +50,36 @@ A Python utility that automatically organizes files by their extension into dedi
 
 ### Command-Line Usage (Recommended)
 
-You can now pass the directory path directly as a command-line argument:
+You can now pass the directory path directly as a command-line argument.
+You can use either the original script name (`file_cleanup.py`) or the
+friendlier wrapper script (`Easy-File-Cleanup.py`):
 
 ```bash
 # Full path
+python3 Easy-File-Cleanup.py /path/to/directory
+# or
 python3 file_cleanup.py /path/to/directory
 
 # Partial path (searches for directories containing the string)
-python3 file_cleanup.py Downloads
+python3 Easy-File-Cleanup.py Downloads
 
 # Home directory shortcut
-python3 file_cleanup.py ~/Documents
+python3 Easy-File-Cleanup.py ~/Documents
 
 # Interactive mode (no arguments)
-python3 file_cleanup.py
+python3 Easy-File-Cleanup.py
 ```
 
 **Examples**:
 ```bash
 # Organize Downloads folder
-python3 file_cleanup.py ~/Downloads
+python3 Easy-File-Cleanup.py ~/Downloads
 
 # Organize current directory
-python3 file_cleanup.py .
+python3 Easy-File-Cleanup.py .
 
 # Find and organize a directory by partial name
-python3 file_cleanup.py MyProject
+python3 Easy-File-Cleanup.py MyProject
 ```
 
 ### Interactive Mode
@@ -83,7 +87,7 @@ python3 file_cleanup.py MyProject
 If you run without arguments, you'll be prompted for the directory:
 
 ```bash
-python3 file_cleanup.py
+python3 Easy-File-Cleanup.py
 ```
 
 You'll see:
@@ -100,28 +104,28 @@ Path:
 
 **Method 1: Direct execution** (if made executable):
 ```bash
-./file_cleanup.py [directory]
+./Easy-File-Cleanup.py [directory]
 ```
 
 **Method 2: Using Python interpreter**:
 ```bash
-python3 file_cleanup.py [directory]
+python3 Easy-File-Cleanup.py [directory]
 ```
 
 ### Windows
 
 **Method 1: Using Python launcher**:
 ```bash
-python file_cleanup.py [directory]
+python Easy-File-Cleanup.py [directory]
 ```
 
 **Method 2: Using Python 3 explicitly**:
 ```bash
-py -3 file_cleanup.py [directory]
+py -3 Easy-File-Cleanup.py [directory]
 ```
 
 **Method 3: Double-click** (if Python is associated with `.py` files):
-- Simply double-click `file_cleanup.py` in File Explorer
+- Simply double-click `Easy-File-Cleanup.py` in File Explorer
 
 ### Automation & Scripting Mode
 
