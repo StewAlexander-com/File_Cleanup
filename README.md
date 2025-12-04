@@ -1,7 +1,6 @@
 # Easy File Cleanup
 
-Easy File Cleanup (`Easy-File-Cleanup.py`) is a Python utility that automatically organizes files by their extension into dedicated folders. Perfect for cleaning up cluttered directories and maintaining an organized file structure.  
-The code lives in the GitHub repository **`StewAlexander-com/File_Cleanup`**.
+Easy File Cleanup (`Easy-File-Cleanup.py`) is a Python utility that automatically organizes files by their extension into dedicated folders. Perfect for cleaning up cluttered directories and maintaining an organized file structure.
 
 ## Features
 
@@ -27,7 +26,7 @@ The code lives in the GitHub repository **`StewAlexander-com/File_Cleanup`**.
 
 ### Setup
 
-1. **Clone the repository**:
+1. **Clone the repository** (the code resides in the `File_Cleanup` folder):
    ```bash
    git clone https://github.com/StewAlexander-com/File_Cleanup.git
    cd File_Cleanup
