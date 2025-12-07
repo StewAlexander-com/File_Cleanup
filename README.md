@@ -10,7 +10,7 @@ Easy File Cleanup (`Easy-File-Cleanup.py`) is a Python utility that automaticall
 - 📝 **Logging**: Maintains a detailed log of all organization activities
 - 🖥️ **Cross-Platform**: Works on Windows, macOS, and Linux
 - 🚫 **Safe**: Ignores hidden files and preserves existing folder structures
-- 📂 **Directory Browser TUI**: Interactive file browser for easy directory selection (similar to 'nnn')
+- 📂 **ncurses Directory Browser TUI**: Full-screen terminal interface for directory browsing (similar to 'nnn') - automatically available in interactive mode
 - ⌨️ **Command-Line Support**: Pass directory paths directly as arguments
 - 🔍 **Partial Path Matching**: Find directories by partial name or path
 - 🎯 **Simplified Interface**: Quick directory selection with smart defaults
@@ -149,6 +149,73 @@ The web interface provides a modern, user-friendly way to organize files with a 
 - Color-coded status indicators
 - Intuitive icons and visual feedback
 
+### Terminal User Interface (TUI) - ncurses Directory Browser
+
+For users who prefer a terminal-based interface, the application includes a powerful ncurses-based directory browser (similar to 'nnn' or 'ranger'). 
+
+**Launch the TUI**:
+```bash
+# Direct launch with --tui flag (recommended)
+python3 Easy-File-Cleanup.py --tui
+
+# Start TUI from a specific directory
+python3 Easy-File-Cleanup.py --tui ~/Downloads
+
+# Alternative: Run without arguments and choose option [2] Browse directories
+python3 Easy-File-Cleanup.py
+# When prompted, choose option [2] Browse directories
+```
+
+**Features**:
+- 🖥️ **Full-Screen Terminal Interface**: Beautiful ncurses-based UI (macOS/Linux)
+- ⌨️ **Keyboard Navigation**: Fast, keyboard-driven directory browsing
+- 📍 **Breadcrumb Navigation**: Quick jump to parent directories with number keys (1-9)
+- 🔍 **Smart Path Input**: Type paths manually while browsing
+- 🏠 **Quick Navigation**: Jump to home directory instantly
+- 🪟 **Windows Support**: Falls back to simple numbered menu on Windows
+
+**Navigation Controls** (macOS/Linux with ncurses):
+
+| Key | Action |
+|-----|--------|
+| `↑` `↓` | Navigate up/down through directories |
+| `Enter` | Enter selected directory |
+| `s` | **Select** current directory for cleanup |
+| `←` or `b` | Go up one directory level |
+| `1-9` | Jump directly to parent levels (1=parent, 2=grandparent, etc.) |
+| `t` | Type path manually |
+| `h` | Jump to home directory |
+| `q` or `ESC` | Cancel and exit |
+
+**Breadcrumb Shortcuts**:
+The TUI displays breadcrumb shortcuts at the top showing which number key (1-9) corresponds to which parent directory level. This allows instant navigation to any ancestor directory without multiple "up" commands.
+
+**Example Usage**:
+```bash
+$ python3 Easy-File-Cleanup.py
+
+Enter directory path (or press Enter for current directory):
+Path: NonexistentPath
+
+✗ Could not find directory matching: NonexistentPath
+
+Would you like to:
+  [1] Try browsing directories
+  [2] Cancel
+
+Enter choice: 1
+
+[Full-screen ncurses directory browser opens]
+[Navigate with arrow keys, press 's' to select, 'q' to cancel]
+```
+
+**Windows Users**:
+On Windows (where ncurses is not available), the TUI automatically falls back to a simple numbered menu interface that provides the same functionality with a different presentation.
+
+**When to Use TUI vs Web Interface**:
+- **Use TUI** when: Working in terminal, prefer keyboard navigation, no browser needed, minimal dependencies
+- **Use Web Interface** when: Want visual graphs, prefer mouse navigation, need to view logs in browser, want to see directory tree visualization
+
 ### Command-Line Usage
 
 You can now pass the directory path directly as a command-line argument.
@@ -199,7 +266,9 @@ Path:
 
 - **Enter a path**: Type full or partial path (e.g., `Downloads`, `/Users/name/Documents`)
 - **Press Enter**: Uses current directory
-- **Path not found**: Option to browse directories or cancel
+- **Path not found**: Option to browse directories using the **ncurses TUI** (full-screen terminal browser) or cancel
+
+When you choose to browse directories, the ncurses directory browser will open automatically (on macOS/Linux) or a simple numbered menu (on Windows). See the [Terminal User Interface (TUI)](#terminal-user-interface-tui---ncurses-directory-browser) section for navigation details.
 
 ### macOS and Linux
 
@@ -230,33 +299,74 @@ py -3 Easy-File-Cleanup.py [directory]
 
 ### Automation & Scripting Mode
 
-The script is fully automation-ready with non-interactive flags:
+The script is **fully automatable** and designed for use in scripts, cron jobs, CI/CD pipelines, and automation workflows. All interactive prompts can be bypassed with command-line flags.
 
+**Fully Automated Examples**:
 ```bash
 # Fully automated (for scripts, cron jobs, automation)
-python3 file_cleanup.py ~/Downloads --yes --quiet
+python3 Easy-File-Cleanup.py ~/Downloads --yes --quiet
 
 # Auto-create copies for duplicates (safe for automation)
-python3 file_cleanup.py Downloads --non-interactive
+python3 Easy-File-Cleanup.py Downloads --non-interactive
 
 # Auto-overwrite duplicates (use with caution)
-python3 file_cleanup.py Downloads --overwrite
+python3 Easy-File-Cleanup.py Downloads --overwrite --quiet
 
 # Minimal output (useful for automation)
-python3 file_cleanup.py Downloads --quiet
+python3 Easy-File-Cleanup.py Downloads --quiet --yes
 ```
+
+**Automation Features**:
+- ✅ **No Interactive Prompts**: All user prompts bypassed with `--yes`, `--non-interactive`, or `--overwrite`
+- ✅ **Silent Operation**: `--quiet` flag suppresses all output (errors still go to stderr)
+- ✅ **Consistent Exit Codes**: Reliable exit codes for automation scripts
+- ✅ **Fast Failure**: Invalid directories fail immediately with proper exit codes
+- ✅ **Flag Validation**: Prevents conflicting flags (automation + interactive)
+- ✅ **Error Handling**: All errors return proper exit codes, no hanging
 
 **Available Flags**:
 - `--yes` / `--non-interactive`: Automatically create copies for duplicates (no prompts)
 - `--overwrite`: Automatically overwrite duplicate files (use with caution)
 - `--quiet`: Minimal output (useful for automation scripts)
-- `--html`: Launch web-based GUI interface (requires Flask)
+- `--html`: Launch web-based GUI interface (requires Flask) - *Not for automation*
+- `--tui`: Launch terminal user interface (ncurses directory browser) - *Not for automation*
 - `--help` / `-h`: Display comprehensive help documentation
 
 **Exit Codes** (for automation):
-- `0`: Success
-- `1`: Error (invalid directory, organization failed, etc.)
+- `0`: Success (files organized successfully)
+- `1`: Error (invalid directory, organization failed, verification failed, etc.)
+- `2`: Invalid arguments or flag conflicts
 - `130`: Interrupted by user (Ctrl+C)
+
+**Automation Best Practices**:
+1. **Always provide a directory path** when using automation flags
+2. **Use `--quiet`** for cron jobs and scripts to suppress output
+3. **Use `--yes` or `--non-interactive`** to avoid duplicate file prompts
+4. **Check exit codes** in your automation scripts
+5. **Never combine automation flags with `--html` or `--tui`** (will error)
+
+**Example Automation Script**:
+```bash
+#!/bin/bash
+# Example cron job script
+
+DIRECTORY="$HOME/Downloads"
+SCRIPT="/path/to/Easy-File-Cleanup.py"
+
+# Run cleanup with full automation
+if python3 "$SCRIPT" "$DIRECTORY" --yes --quiet; then
+    echo "$(date): Cleanup successful" >> /var/log/file-cleanup.log
+else
+    echo "$(date): Cleanup failed (exit code: $?)" >> /var/log/file-cleanup.log
+    exit 1
+fi
+```
+
+**Cron Job Example**:
+```bash
+# Run cleanup every day at 2 AM
+0 2 * * * /usr/bin/python3 /path/to/Easy-File-Cleanup.py ~/Downloads --yes --quiet
+```
 
 ### Advanced Usage
 
@@ -291,20 +401,15 @@ python3 file_cleanup.py Downloads --quiet
    - Log viewing
    - Server controls
 
-3. **Directory Browser (Option 2)**:
-   - **macOS/Linux**: Uses `curses` for a full-screen file browser with arrow key navigation
-   - **Windows**: Uses a simple numbered menu interface
-   - **Navigation**:
-     - Arrow keys (↑↓) to navigate directories
-     - **Enter** to navigate into a selected directory (go down a level)
-     - **`s` key** to select the current directory
-     - ← or `b` to go up one level
-     - **Number keys (1-9)**: Jump directly to parent levels (1=parent, 2=grandparent, etc.)
-     - Breadcrumb shortcuts displayed at top show which number corresponds to which level
-   - **Quick Actions**:
-     - Type `t` to manually enter a path while browsing
-     - Type `h` to jump to home directory
-     - Type `q` or ESC to cancel
+6. **Terminal User Interface (TUI)**: Launch the ncurses directory browser
+   ```bash
+   python3 Easy-File-Cleanup.py --tui
+   python3 Easy-File-Cleanup.py --tui ~/Downloads  # Start from specific directory
+   ```
+   - Direct launch of full-screen terminal directory browser
+   - See the [Terminal User Interface (TUI)](#terminal-user-interface-tui---ncurses-directory-browser) section above for full details
+   - Full-screen terminal interface with keyboard navigation
+   - Breadcrumb shortcuts for quick parent directory access
 
 4. The program will:
    - Scan for files in the directory

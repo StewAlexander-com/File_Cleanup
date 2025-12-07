@@ -5,6 +5,7 @@ Organizes files by extension into dedicated folders with logging and duplicate h
 """
 
 import os
+import sys
 import shutil
 import argparse
 from pathlib import Path
@@ -100,7 +101,7 @@ def find_directory_by_partial_path(partial_path: str) -> Optional[Path]:
     return None
 
 
-def organize_files(directory: Path, non_interactive: bool = False, overwrite: bool = False) -> dict:
+def organize_files(directory: Path, non_interactive: bool = False, overwrite: bool = False, quiet: bool = False) -> dict:
     """
     Organize files in directory by extension into folders.
 
@@ -109,6 +110,7 @@ def organize_files(directory: Path, non_interactive: bool = False, overwrite: bo
         non_interactive: If True, automatically create copies instead of prompting (default: False)
         overwrite: If True, automatically overwrite duplicates (default: False)
                    Note: overwrite takes precedence over non_interactive
+        quiet: If True, suppress all output (default: False)
 
     Returns:
         dict: Mapping of folder names to list of files moved
@@ -132,9 +134,11 @@ def organize_files(directory: Path, non_interactive: bool = False, overwrite: bo
         # Create folder only if it doesn't exist, otherwise reuse existing
         if not folder_existed:
             folder_path.mkdir(exist_ok=True)
-            print(f"✓ Created: {ext}/")
+            if not quiet:
+                print(f"✓ Created: {ext}/")
         else:
-            print(f"→ Using: {ext}/")
+            if not quiet:
+                print(f"→ Using: {ext}/")
 
         # Move each file, handling name conflicts
         for file in files:
@@ -144,7 +148,8 @@ def organize_files(directory: Path, non_interactive: bool = False, overwrite: bo
             if destination.exists():
                 if overwrite:
                     # Auto-overwrite mode
-                    print(f"  → {file.name} (overwriting existing)")
+                    if not quiet:
+                        print(f"  → {file.name} (overwriting existing)")
                 elif non_interactive:
                     # Auto-create copy mode
                     stem = destination.stem
@@ -153,10 +158,20 @@ def organize_files(directory: Path, non_interactive: bool = False, overwrite: bo
                     while destination.exists():
                         destination = folder_path / f"{stem}_copy{copy_num}{suffix}"
                         copy_num += 1
-                    print(f"  → {file.name} (created {destination.name})")
+                    if not quiet:
+                        print(f"  → {file.name} (created {destination.name})")
                 else:
-                    # Interactive mode - prompt user
-                    response = input(f"\n⚠ '{file.name}' exists in {ext}/. Overwrite? (y/n): ").lower()
+                    # Interactive mode - prompt user (should not happen in automation)
+                    # Safety check: if non_interactive is False but we're in automation context,
+                    # default to creating copy to avoid hanging
+                    if non_interactive:
+                        # This should never happen, but safety fallback
+                        response = 'n'
+                    elif not quiet:
+                        response = input(f"\n⚠ '{file.name}' exists in {ext}/. Overwrite? (y/n): ").lower()
+                    else:
+                        # In quiet mode without non_interactive, default to creating copy
+                        response = 'n'
                     if response != 'y':
                         # Generate unique filename: name_copy1.ext, name_copy2.ext, etc.
                         stem = destination.stem
@@ -165,12 +180,15 @@ def organize_files(directory: Path, non_interactive: bool = False, overwrite: bo
                         while destination.exists():
                             destination = folder_path / f"{stem}_copy{copy_num}{suffix}"
                             copy_num += 1
-                        print(f"  → {file.name} (created {destination.name})")
+                        if not quiet:
+                            print(f"  → {file.name} (created {destination.name})")
                     else:
-                        print(f"  → {file.name} (overwriting existing)")
+                        if not quiet:
+                            print(f"  → {file.name} (overwriting existing)")
 
             else:
-                print(f"  → {file.name}")
+                if not quiet:
+                    print(f"  → {file.name}")
 
             shutil.move(str(file), str(destination))
             moved_files[ext].append(destination.name)
@@ -300,6 +318,102 @@ def get_directory_from_args_or_input(args_path: Optional[str] = None) -> Optiona
     return directory
 
 
+def find_similar_flags(invalid_arg: str, valid_flags: list) -> list:
+    """
+    Find flags similar to the invalid argument (for typo suggestions).
+    
+    Args:
+        invalid_arg: The invalid flag that was entered
+        valid_flags: List of valid flag names (without -- prefix)
+    
+    Returns:
+        List of similar flags, sorted by similarity
+    """
+    if not invalid_arg or not invalid_arg.startswith('--'):
+        return []
+    
+    invalid_arg = invalid_arg[2:]  # Remove '--' prefix
+    suggestions = []
+    
+    for flag in valid_flags:
+        # Check for partial matches
+        if invalid_arg in flag or flag in invalid_arg:
+            suggestions.append(flag)
+        # Check for similar length and character overlap
+        elif abs(len(invalid_arg) - len(flag)) <= 2:
+            # Simple similarity: count matching characters
+            matches = sum(1 for a, b in zip(invalid_arg, flag) if a == b)
+            if matches >= min(len(invalid_arg), len(flag)) * 0.6:  # 60% similarity
+                suggestions.append(flag)
+    
+    return suggestions[:3]  # Return top 3 suggestions
+
+
+class CustomArgumentParser(argparse.ArgumentParser):
+    """
+    Custom ArgumentParser that provides helpful error messages for invalid flags.
+    """
+    
+    def error(self, message):
+        """
+        Override error method to provide user-friendly flag suggestions.
+        
+        Args:
+            message: The error message from argparse
+        """
+        # Check if the error is about an unknown argument (invalid flag)
+        if 'unrecognized arguments' in message.lower() or 'invalid choice' in message.lower():
+            # Extract the invalid argument from the error message
+            invalid_arg = None
+            if 'unrecognized arguments:' in message:
+                invalid_arg = message.split('unrecognized arguments:')[-1].strip().split()[0]
+            
+            # Define all valid flags
+            valid_flags = ['html', 'tui', 'yes', 'non-interactive', 'overwrite', 'quiet', 'help']
+            
+            print(f"\n✗ Error: Unknown flag or option")
+            if invalid_arg:
+                print(f"   '{invalid_arg}' is not a valid option.\n")
+                
+                # Try to suggest similar flags
+                suggestions = find_similar_flags(invalid_arg, valid_flags)
+                if suggestions:
+                    print("💡 Did you mean one of these?")
+                    for sug in suggestions:
+                        print(f"   --{sug}")
+                    print()
+            else:
+                print(f"   {message}\n")
+            
+            print("=" * 70)
+            print("Available Flags:")
+            print("=" * 70)
+            print("\n  Interface Options:")
+            print("    --html              Launch web-based GUI interface")
+            print("                        (Requires Flask: pip install Flask)")
+            print("    --tui               Launch terminal user interface")
+            print("                        (ncurses directory browser)")
+            print("\n  Duplicate Handling:")
+            print("    --yes               Non-interactive: auto-create copies for duplicates")
+            print("    --non-interactive   Same as --yes")
+            print("    --overwrite         Auto-overwrite duplicate files (use with caution)")
+            print("\n  Output Control:")
+            print("    --quiet             Minimal output (useful for automation)")
+            print("\n  Help:")
+            print("    --help, -h          Show comprehensive help documentation")
+            print("\n" + "=" * 70)
+            print("\n💡 Quick Examples:")
+            print("   %s --html              # Launch web interface" % self.prog)
+            print("   %s --tui               # Launch terminal interface" % self.prog)
+            print("   %s Downloads --yes     # Organize with auto-copy for duplicates" % self.prog)
+            print("   %s --help              # Show full help\n" % self.prog)
+            
+            self.exit(2, "")
+        else:
+            # For other errors, use default argparse behavior
+            super().error(message)
+
+
 def main():
     """
     Main execution flow for file cleanup application.
@@ -310,7 +424,7 @@ def main():
     Returns:
         int: Exit code (0 for success, 1 for error, 130 for KeyboardInterrupt)
     """
-    parser = argparse.ArgumentParser(
+    parser = CustomArgumentParser(
         prog='Easy-File-Cleanup.py',
         description='File Organizer - Organizes files by extension into dedicated folders',
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -333,6 +447,10 @@ USAGE EXAMPLES:
   Web Interface:
     %(prog)s --html                          # Launch web-based GUI interface
                                              # (Requires Flask: pip install Flask)
+
+  Terminal User Interface (TUI):
+    %(prog)s --tui                           # Launch ncurses directory browser
+    %(prog)s --tui ~/Downloads               # Start TUI from specific directory
 
   Combined Options:
     %(prog)s ~/Downloads --yes --quiet       # Fully automated, minimal output
@@ -365,6 +483,9 @@ EXAMPLES:
 
   # Web interface
   %(prog)s --html
+
+  # Terminal user interface (ncurses directory browser)
+  %(prog)s --tui
 
   # Automated cleanup
   %(prog)s Downloads --yes --quiet
@@ -406,8 +527,86 @@ For more information, visit: https://github.com/stewartalexander/File_Cleanup
         action='store_true',
         help='Launch web-based GUI interface (requires Flask: pip install Flask)'
     )
+    parser.add_argument(
+        '--tui',
+        action='store_true',
+        help='Launch terminal user interface (ncurses directory browser) for directory selection'
+    )
     
     args = parser.parse_args()
+    
+    # Validate flag combinations for automation
+    automation_flags = ['--yes', '--non-interactive', '--overwrite', '--quiet']
+    interactive_flags = ['--html', '--tui']
+    
+    # Check for conflicting flags (automation + interactive)
+    has_automation = args.yes or args.non_interactive or args.overwrite or args.quiet
+    has_interactive = args.html or args.tui
+    
+    if has_automation and has_interactive:
+        parser.error(
+            "Cannot combine automation flags (--yes, --non-interactive, --overwrite, --quiet) "
+            "with interactive flags (--html, --tui).\n"
+            "For automation, use: %(prog)s <directory> --yes --quiet\n"
+            "For interactive use, use: %(prog)s --html or %(prog)s --tui"
+        )
+    
+    # If --tui flag is set, launch TUI directory browser
+    if args.tui:
+        from directory_browser import browse_directory
+        
+        if not args.quiet:
+            print("File Organizer v1.1")
+            print("=" * 60)
+            print("\n📂 Terminal User Interface - Directory Browser")
+            print("=" * 60)
+            print("\nNavigate directories and press 's' to select a directory for cleanup.")
+            print("Press 'q' or ESC to cancel.\n")
+        
+        # Start browsing from the provided directory or home directory
+        start_path = None
+        if args.directory:
+            start_path = find_directory_by_partial_path(args.directory)
+            if start_path:
+                if not args.quiet:
+                    print(f"Starting from: {start_path}\n")
+            else:
+                if not args.quiet:
+                    print(f"⚠ Could not find directory matching: {args.directory}")
+                    print("Starting TUI from home directory instead.\n")
+        
+        directory = browse_directory(start_path)
+        
+        if directory is None:
+            if not args.quiet:
+                print("\n⚠ Cancelled by user")
+            return 1
+        
+        if not args.quiet:
+            print(f"\n✓ Selected directory: {directory}")
+            print(f"\nOrganizing: {directory.name}/")
+            print("-" * 60)
+        
+        # Proceed with file organization
+        non_interactive = args.yes or args.non_interactive
+        moved_files, folder_status = organize_files(directory, non_interactive=non_interactive, overwrite=args.overwrite, quiet=args.quiet)
+        
+        if not moved_files:
+            if not args.quiet:
+                print("\n→ No files to organize")
+            return 0
+        
+        # Verify organization
+        is_organized = verify_organization(directory, quiet=args.quiet)
+        
+        # Create log
+        create_log(directory, moved_files, folder_status, quiet=args.quiet)
+        
+        if not args.quiet:
+            print("\n" + "=" * 60)
+            print("✓ Organization complete")
+        
+        return 0 if is_organized else 1
     
     # If --html flag is set, launch web interface
     if args.html:
@@ -449,21 +648,33 @@ For more information, visit: https://github.com/stewartalexander/File_Cleanup
         print("=" * 60)
 
     # Get target directory from command-line argument or user input
-    # If non-interactive and no directory provided, fail
+    # If non-interactive and no directory provided, fail fast with clear error
     if not args.directory and non_interactive:
-        parser.error("Directory path required in non-interactive mode. Use --help for usage.")
+        if not args.quiet:
+            parser.error("Directory path required in non-interactive mode. Use --help for usage.")
+        else:
+            # In quiet mode, just return error code without argparse error message
+            return 1
     
-    # In non-interactive mode, skip interactive prompts
+    # In non-interactive mode, skip interactive prompts and fail fast on errors
     if non_interactive and args.directory:
         directory = find_directory_by_partial_path(args.directory)
         if not directory:
             if not args.quiet:
-                print(f"✗ Could not find directory matching: {args.directory}")
+                print(f"✗ Could not find directory matching: {args.directory}", file=sys.stderr)
             return 1
         if not args.quiet:
             print(f"✓ Found directory: {directory}")
     else:
-        directory = get_directory_from_args_or_input(args.directory)
+        # Interactive mode - but if quiet is set, we should still try to be non-interactive
+        if args.quiet and args.directory:
+            # Quiet mode with directory: treat as non-interactive
+            directory = find_directory_by_partial_path(args.directory)
+            if not directory:
+                print(f"✗ Could not find directory matching: {args.directory}", file=sys.stderr)
+                return 1
+        else:
+            directory = get_directory_from_args_or_input(args.directory)
     
     if directory is None:
         if not args.quiet:
@@ -473,7 +684,10 @@ For more information, visit: https://github.com/stewartalexander/File_Cleanup
     # Validate directory exists before proceeding
     if not directory.exists() or not directory.is_dir():
         if not args.quiet:
-            print(f"✗ Error: '{directory}' is not a valid directory")
+            print(f"✗ Error: '{directory}' is not a valid directory", file=sys.stderr)
+        else:
+            # In quiet mode, still output critical errors to stderr
+            print(f"Error: '{directory}' is not a valid directory", file=sys.stderr)
         return 1
 
     if not args.quiet:
@@ -481,7 +695,7 @@ For more information, visit: https://github.com/stewartalexander/File_Cleanup
         print("-" * 60)
 
     # Step 1: Sort files into extension-based folders
-    moved_files, folder_status = organize_files(directory, non_interactive=non_interactive, overwrite=args.overwrite)
+    moved_files, folder_status = organize_files(directory, non_interactive=non_interactive, overwrite=args.overwrite, quiet=args.quiet)
 
     if not moved_files:
         if not args.quiet:
