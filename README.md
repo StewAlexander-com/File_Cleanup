@@ -85,28 +85,28 @@ The web interface provides a modern, user-friendly way to organize files with a 
 
 ```
 +================================================================================+
-|  File Cleanup                                              [Server Controls]  |
-|  Organize files by extension into dedicated folders                           |
+|  File Cleanup                                              [Server Controls]   |
+|  Organize files by extension into dedicated folders                            |
 +==========================================+=====================================+
 |                                          |                                     |
-|  Directory Browser                       |  Results Tab | Logs Tab            |
+|  Directory Browser                       |  Results Tab | Logs Tab             |
 |                                          |                                     |
 |  Breadcrumbs: / > home                   |  Statistics:                        |
-|  [Path Input] [Go] [Home]                |    Files: 15  Folders: 8             |
+|  [Path Input] [Go] [Home]                |    Files: 15  Folders: 8            |
 |                                          |                                     |
-|  Directories:                            |  Cleanup History Graph               |
+|  Directories:                            |  Cleanup History Graph              |
 |    folder1/                              |    [Chart visualization]            |
 |    folder2/                              |                                     |
 |    folder3/                              |  Directory Structure:               |
 |                                          |    > pdf/ (NEW)                     |
-|  Files:                                 |      - document1.pdf                 |
-|    file1.txt                             |      - document2.pdf                 |
+|  Files:                                  |      - document1.pdf                |
+|    file1.txt                             |      - document2.pdf                |
 |    file2.pdf                             |    > jpg/ (NEW)                     |
-|    image.jpg                             |      - photo1.jpg                    |
-|                                          |    > txt/ (EXISTING)                 |
-|  Options:                                |      - notes.txt                     |
-|    [x] Non-interactive                    |                                     |
-|    [ ] Overwrite                         |  [Expand All] [Collapse All]       |
+|    image.jpg                             |      - photo1.jpg                   |
+|                                          |    > txt/ (EXISTING)                |
+|  Options:                                |      - notes.txt                    |
+|    [x] Non-interactive                   |                                     |
+|    [ ] Overwrite                         |  [Expand All] [Collapse All]        |
 |                                          |                                     |
 |  [Organize Files]                        |                                     |
 |                                          |                                     |
