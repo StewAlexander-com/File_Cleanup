@@ -8,6 +8,29 @@ Organizes files by extension into dedicated folders. Perfect for cleaning up clu
 - **Who it's for**: Non-technical users (web UI), terminal users (TUI), and developers/devops (automation)
 - **Quick start**: `python3 Easy-File-Cleanup.py --html` (web) or `python3 Easy-File-Cleanup.py ~/Downloads` (CLI)
 
+## Table of Contents
+
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+  - [Web Interface](#web-interface-recommended-for-beginners)
+  - [Terminal Interface (TUI)](#terminal-interface-tui)
+  - [Command Line (Automation)](#command-line-automation)
+- [Features](#features)
+  - [Core Functionality](#core-functionality)
+  - [Interface Options](#interface-options)
+  - [Automation](#automation)
+- [How It Works](#how-it-works)
+- [Usage](#usage)
+  - [Basic Command Line](#basic-command-line)
+  - [Interactive Mode](#interactive-mode)
+  - [Available Flags](#available-flags)
+- [Automation & Scripting](#automation--scripting)
+- [Testing](#testing)
+- [Documentation](#documentation)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
+
 ## Installation
 
 **Requirements**: Python 3.6+
