@@ -1,7 +1,8 @@
 # Test Plan for File Cleanup Application
 
-## Overview
 This document outlines the test plan for the File Cleanup application, including both CLI and Flask web interface components.
+
+**Navigation**: [← Back to README](README.md) | [Contributing Guidelines](CONTRIBUTING.md) | [CHANGELOG](CHANGELOG.md)
 
 ## Test Categories
 
@@ -213,6 +214,13 @@ When tests fail:
 
 ---
 
-**Last Updated:** 2025
+**Last Updated:** 2025  
 **Test Suite Version:** 2.0 (includes Flask web interface tests)
+
+**Related Documentation**:
+- [README](README.md) - Main documentation and project overview
+- [Contributing Guidelines](CONTRIBUTING.md) - How to contribute and testing requirements
+- [CHANGELOG](CHANGELOG.md) - Version history and changes
+- [Web Interface Guide](docs/web.md) - Web UI features being tested
+- [TUI Guide](docs/tui.md) - Terminal interface documentation
 
