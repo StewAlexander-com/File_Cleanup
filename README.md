@@ -79,29 +79,69 @@ The server will:
 
 **Web Interface Features**:
 
-The web interface provides a modern, user-friendly way to organize files:
+The web interface provides a modern, user-friendly way to organize files with a clean, responsive design:
 
-- **Left Panel - Directory Browser**:
-  - Navigate directories with breadcrumb navigation
-  - Click folders to browse, or use path input
-  - View files and subdirectories
-  - Auto-refresh indicator shows when polling is active
+**Interface Layout**:
+```
+┌─────────────────────────────────────────────────────────────┐
+│  🗂️ File Cleanup                    [⚙️ Server]            │
+│  Organize files by extension into dedicated folders         │
+├──────────────────────────┬──────────────────────────────────┤
+│                          │                                  │
+│  📂 Directory Browser    │  📊 Results | 📝 Logs           │
+│                          │                                  │
+│  [Breadcrumbs: / > home] │  ┌──────────────────────────┐  │
+│  [Path Input] [Go] [🏠]  │  │ Statistics Cards         │  │
+│                          │  │ • Files: 15              │  │
+│  📁 folder1/             │  │ • Folders: 8             │  │
+│  📁 folder2/             │  │ • Status: ✓              │  │
+│  📁 folder3/             │  └──────────────────────────┘  │
+│                          │                                  │
+│  📄 file1.txt            │  📈 Cleanup History Graph       │
+│  📄 file2.pdf            │  [Chart showing trends]          │
+│                          │                                  │
+│  [🚀 Organize Files]     │  📂 Directory Structure          │
+│                          │  ▶ pdf/ (NEW)                   │
+│                          │    ▶ jpg/ (NEW)                 │
+│                          │    ▶ txt/ (EXISTING)            │
+└──────────────────────────┴──────────────────────────────────┘
+```
 
-- **Right Panel - Results & Logs**:
-  - **Results Tab**: 
-    - Statistics cards (Files Organized, Folders, Verification)
-    - Cleanup history graph showing trends over time
-    - Detailed file organization results
-    - Expandable/collapsible directory tree (NEW folders start expanded)
-  - **Logs Tab**: View organization logs for any directory
+**Left Panel - Directory Browser**:
+- Navigate directories with breadcrumb navigation
+- Click folders to browse, or use path input field
+- View files and subdirectories in a scrollable list
+- Auto-refresh indicator (green dot) shows when polling is active
+- Home and Up buttons for quick navigation
+- Options for non-interactive mode and overwrite behavior
 
-- **Server Controls**: Access server management from the ⚙️ button in the header
+**Right Panel - Results & Logs**:
+- **Results Tab**: 
+  - Statistics cards showing Files Organized, Folders Created, and Verification Status
+  - Cleanup history graph (Chart.js) showing trends over time
+  - Detailed file organization results with folder status (NEW/EXISTING)
+  - Expandable/collapsible directory tree view
+    - NEW folders (created during cleanup) start expanded
+    - EXISTING folders start collapsed
+    - Expand All / Collapse All buttons
+    - Visual indicators for folder status
+- **Logs Tab**: 
+  - View organization logs for the current directory
+  - Syntax-highlighted log display
+  - Refresh button to reload logs
 
-**Screenshot**:
+**Header Controls**:
+- Server button (⚙️) for server management:
+  - View server status (host, port, security mode)
+  - Stop server gracefully
+  - Restart server (with instructions)
 
-![File Cleanup Web Interface](docs/web-interface-screenshot.png)
-
-*The web interface provides an intuitive way to browse directories, organize files, and view results with visual feedback.*
+**Design Features**:
+- Modern gradient header with purple/blue theme
+- Responsive layout (adapts to screen size)
+- Smooth animations and transitions
+- Color-coded status indicators
+- Intuitive icons and visual feedback
 
 ### Command-Line Usage
 
