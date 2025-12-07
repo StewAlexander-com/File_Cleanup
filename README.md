@@ -16,13 +16,20 @@ Easy File Cleanup (`Easy-File-Cleanup.py`) is a Python utility that automaticall
 - 🎯 **Simplified Interface**: Quick directory selection with smart defaults
 - 🤖 **Fully Scriptable**: Non-interactive flags for automation and cron jobs
 - 📋 **Enhanced CLI Help**: Comprehensive help documentation with usage examples
+- 🌐 **Web GUI Interface**: Modern web-based interface with directory browsing, cleanup operations, and visualization
+- 📊 **Cleanup History Graph**: Visual timeline of cleanup operations with Chart.js
+- 📂 **Directory Tree View**: Expandable/collapsible directory structure visualization
+- 🔄 **Auto-Refresh**: Automatic polling with exponential backoff to detect directory changes
+- 🔒 **Secure**: Localhost-only binding for security
+- ⚙️ **Server Controls**: Stop and restart server from web interface
 
 ## Installation
 
 ### Prerequisites
 
 - Python 3.6 or higher
-- No additional dependencies required (uses Python standard library only)
+- **For CLI mode**: No additional dependencies required (uses Python standard library only)
+- **For Web GUI mode**: Flask (install with `pip install Flask` or `pip install -r requirements.txt`)
 
 ### Setup
 
@@ -48,7 +55,55 @@ Easy File Cleanup (`Easy-File-Cleanup.py`) is a Python utility that automaticall
 
 ## How to Run
 
-### Command-Line Usage (Recommended)
+### Web Interface (Recommended for Interactive Use)
+
+Launch the modern web-based GUI for the easiest experience:
+
+```bash
+python3 Easy-File-Cleanup.py --html
+```
+
+**Features**:
+- 🖱️ **Point-and-Click**: Navigate directories with your mouse
+- 📊 **Visual Feedback**: See cleanup results with graphs and statistics
+- 📂 **Directory Tree**: Expandable/collapsible folder structure view
+- 🔄 **Auto-Refresh**: Automatically detects and shows directory changes
+- 📝 **Log Viewer**: View organization logs directly in the browser
+- ⚙️ **Server Controls**: Manage server from the web interface
+
+The server will:
+- Automatically find an available port (starts from 5000)
+- Open your browser automatically
+- Display the URL if auto-open fails
+- Run securely on localhost only (127.0.0.1)
+
+**Web Interface Features**:
+
+The web interface provides a modern, user-friendly way to organize files:
+
+- **Left Panel - Directory Browser**:
+  - Navigate directories with breadcrumb navigation
+  - Click folders to browse, or use path input
+  - View files and subdirectories
+  - Auto-refresh indicator shows when polling is active
+
+- **Right Panel - Results & Logs**:
+  - **Results Tab**: 
+    - Statistics cards (Files Organized, Folders, Verification)
+    - Cleanup history graph showing trends over time
+    - Detailed file organization results
+    - Expandable/collapsible directory tree (NEW folders start expanded)
+  - **Logs Tab**: View organization logs for any directory
+
+- **Server Controls**: Access server management from the ⚙️ button in the header
+
+**Screenshot**:
+
+![File Cleanup Web Interface](docs/web-interface-screenshot.png)
+
+*The web interface provides an intuitive way to browse directories, organize files, and view results with visual feedback.*
+
+### Command-Line Usage
 
 You can now pass the directory path directly as a command-line argument.
 You can use either the original script name (`file_cleanup.py`) or the
@@ -149,7 +204,8 @@ python3 file_cleanup.py Downloads --quiet
 - `--yes` / `--non-interactive`: Automatically create copies for duplicates (no prompts)
 - `--overwrite`: Automatically overwrite duplicate files (use with caution)
 - `--quiet`: Minimal output (useful for automation scripts)
-- `--help`: Display comprehensive help documentation
+- `--html`: Launch web-based GUI interface (requires Flask)
+- `--help` / `-h`: Display comprehensive help documentation
 
 **Exit Codes** (for automation):
 - `0`: Success
@@ -174,8 +230,20 @@ python3 file_cleanup.py Downloads --quiet
 
 4. **View help**: Get comprehensive usage information
    ```bash
-   python3 file_cleanup.py --help
+   python3 Easy-File-Cleanup.py --help
    ```
+
+5. **Web Interface**: Launch the modern web-based GUI
+   ```bash
+   python3 Easy-File-Cleanup.py --html
+   ```
+   - Automatically opens browser (or shows URL)
+   - Directory browsing with breadcrumb navigation
+   - File organization with visual feedback
+   - Cleanup history graphs
+   - Directory structure tree view
+   - Log viewing
+   - Server controls
 
 3. **Directory Browser (Option 2)**:
    - **macOS/Linux**: Uses `curses` for a full-screen file browser with arrow key navigation
@@ -407,6 +475,25 @@ python test_file_cleanup.py
 
 All tests use Python's standard library and `pathlib`, ensuring consistent behavior across platforms.
 
+### Web Interface Tests
+
+The project also includes comprehensive tests for the Flask web interface:
+
+```bash
+# Run web interface tests (requires Flask)
+python3 test_web_interface.py
+```
+
+**Test Coverage** (18 tests):
+- ✅ API endpoint functionality
+- ✅ Directory browsing and navigation
+- ✅ File cleanup operations
+- ✅ Server status and controls
+- ✅ Security features (localhost-only binding)
+- ✅ Integration workflows
+
+**Note**: Web interface tests gracefully skip if Flask is not installed, allowing the test suite to run on systems without Flask.
+
 ## Why This Program is Useful
 
 ### Common Use Cases
@@ -482,12 +569,24 @@ This project is open source and available for use and modification.
 
 ---
 
-**Version**: 1.2  
-**Last Updated**: 2025
+**Version**: 2.0  
+**Last Updated**: December 2025
 
 ### Recent Updates
 
-**v1.2** (Latest):
+**v2.0** (Latest):
+- 🌐 **Web GUI Interface**: Modern web-based interface with full directory browsing
+- 📊 **Cleanup History Graph**: Visual timeline of cleanup operations using Chart.js
+- 📂 **Directory Tree View**: Expandable/collapsible directory structure with NEW/EXISTING indicators
+- 🔄 **Auto-Refresh**: Intelligent polling with exponential backoff to detect directory changes
+- 🔒 **Security**: Localhost-only binding enforced for safe local access
+- ⚙️ **Server Controls**: Stop and restart server from web interface
+- 🔍 **Port Detection**: Automatic port conflict detection and resolution
+- 📝 **Comprehensive Documentation**: Full docstrings for all functions
+- 🧪 **Web Interface Tests**: Complete test suite for Flask GUI (18 tests)
+- 📋 **Enhanced Help**: Improved --help flag with installation and examples
+
+**v1.2**:
 - 🤖 **Full Scriptability**: Added `--yes`, `--non-interactive`, `--overwrite`, and `--quiet` flags
 - 📋 **Enhanced CLI Help**: Comprehensive help documentation with usage examples
 - 🔧 **Automation Ready**: Proper exit codes and non-interactive modes for cron jobs and scripts

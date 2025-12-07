@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Cleanup - Web Interface</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+        }
+
+        .header > div {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        @media (max-width: 768px) {
+            .header > div {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .panel h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .breadcrumbs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .breadcrumb {
+            color: #667eea;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .breadcrumb:hover {
+            background: #f0f0f0;
+        }
+
+        .breadcrumb::after {
+            content: ' /';
+            color: #999;
+            margin-left: 4px;
+        }
+
+        .breadcrumb:last-child::after {
+            content: '';
+        }
+
+        .directory-list {
+            max-height: 500px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 15px;
+        }
+
+        .directory-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.2s;
+        }
+
+        .directory-item:hover {
+            background: #f8f9fa;
+        }
+
+        .directory-item:last-child {
+            border-bottom: none;
+        }
+
+        .directory-icon {
+            font-size: 1.2em;
+        }
+
+        .file-item {
+            padding: 8px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .file-icon {
+            font-size: 1em;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .path-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1em;
+            min-width: 200px;
+        }
+
+        .path-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border: 1px solid #f5c6cb;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border: 1px solid #c3e6cb;
+        }
+
+        .log-content {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            max-height: 500px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .results {
+            margin-top: 20px;
+        }
+
+        .result-item {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-item h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .file-list {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+
+        .file-list li {
+            margin: 5px 0;
+            color: #666;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            color: #666;
+            font-size: 1em;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .options {
+            margin-bottom: 15px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            cursor: pointer;
+            color: #333;
+        }
+
+        .server-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-server {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-server:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .server-status {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .status-item:last-child {
+            border-bottom: none;
+        }
+
+        .status-label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .status-value {
+            color: #667eea;
+        }
+
+        .status-value.security {
+            color: #28a745;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .btn-warning:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .polling-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #28a745;
+            margin-left: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        .polling-indicator.inactive {
+            background: #6c757d;
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .directory-tree {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            border: 1px solid #e0e0e0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 0.9em;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .tree-item {
+            padding: 4px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+        }
+
+        .tree-item.directory {
+            font-weight: 600;
+            color: #667eea;
+            cursor: pointer;
+        }
+
+        .tree-item.directory:hover {
+            background: #f0f0f0;
+            border-radius: 4px;
+        }
+
+        .tree-item.file {
+            color: #666;
+            padding-left: 24px;
+        }
+
+        .tree-toggle {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            text-align: center;
+            line-height: 16px;
+            font-size: 12px;
+            color: #667eea;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .tree-toggle::before {
+            content: '▶';
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+
+        .tree-toggle.expanded::before {
+            transform: rotate(90deg);
+        }
+
+        .tree-children {
+            margin-left: 20px;
+            display: none;
+        }
+
+        .tree-children.expanded {
+            display: block;
+        }
+
+        .tree-folder-new {
+            color: #28a745;
+        }
+
+        .tree-folder-existing {
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1>🗂️ File Cleanup</h1>
+                    <p>Organize files by extension into dedicated folders</p>
+                </div>
+                <div class="server-controls">
+                    <button class="btn-server" onclick="showServerControls()" title="Server Controls">
+                        ⚙️ Server
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Server Control Modal -->
+        <div id="serverModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="margin: 0; color: #667eea;">⚙️ Server Controls</h2>
+                    <button onclick="closeServerModal()" style="background: none; border: none; font-size: 1.5em; cursor: pointer; color: #999;">&times;</button>
+                </div>
+                <div id="serverStatus" class="server-status">
+                    <div class="loading">Loading server status...</div>
+                </div>
+                <div class="server-actions" style="margin-top: 20px; display: flex; gap: 10px;">
+                    <button class="btn-warning" onclick="restartServer()" id="restartBtn">
+                        🔄 Restart Server
+                    </button>
+                    <button class="btn-danger" onclick="stopServer()" id="stopBtn">
+                        ⏹️ Stop Server
+                    </button>
+                </div>
+                <div id="serverMessage" style="margin-top: 15px;"></div>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Directory Browser Panel -->
+            <div class="panel">
+                <h2>📂 Directory Browser <span id="pollingIndicator" class="polling-indicator inactive" title="Auto-refresh status"></span></h2>
+                
+                <div class="breadcrumbs" id="breadcrumbs"></div>
+                
+                <div class="controls">
+                    <input type="text" class="path-input" id="pathInput" placeholder="Enter directory path or navigate below">
+                    <button class="btn-secondary" onclick="goToPath()">Go</button>
+                    <button class="btn-secondary" onclick="goHome()">🏠 Home</button>
+                    <button class="btn-secondary" onclick="goUp()">⬆️ Up</button>
+                </div>
+
+                <div class="directory-list" id="directoryList">
+                    <div class="loading">Loading...</div>
+                </div>
+
+                <div class="options">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="nonInteractive" checked>
+                        <label for="nonInteractive">Non-interactive mode (auto-create copies for duplicates)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="overwrite">
+                        <label for="overwrite">Overwrite duplicates (use with caution)</label>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button class="btn-primary" onclick="runCleanup()" id="cleanupBtn">
+                        🚀 Organize Files
+                    </button>
+                </div>
+
+                <div id="cleanupStatus"></div>
+            </div>
+
+            <!-- Results & Logs Panel -->
+            <div class="panel">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('results')">📊 Results</button>
+                    <button class="tab" onclick="switchTab('logs')">📝 Logs</button>
+                </div>
+
+                <div id="resultsTab" class="tab-content active">
+                    <h2>Cleanup Results</h2>
+                    <div id="resultsContent">
+                        <p style="color: #999; text-align: center; padding: 40px;">
+                            No cleanup operations performed yet. Select a directory and click "Organize Files" to get started.
+                        </p>
+                    </div>
+                </div>
+
+                <div id="logsTab" class="tab-content">
+                    <h2>Organization Log</h2>
+                    <div class="controls">
+                        <button class="btn-secondary" onclick="loadLogs()">🔄 Refresh Log</button>
+                    </div>
+                    <div id="logsContent">
+                        <div class="loading">Click "Refresh Log" to load logs for current directory</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPath = '';
+        let parentPath = null;
+        let pollingInterval = null;
+        let lastDirectoryHash = null;
+        let pollingBackoff = 2000; // Start with 2 seconds
+        const MIN_POLL_INTERVAL = 1000; // Minimum 1 second
+        const MAX_POLL_INTERVAL = 30000; // Maximum 30 seconds
+        const BACKOFF_MULTIPLIER = 1.5;
+        const SUCCESS_RESET_INTERVAL = 2000; // Reset to 2s on success
+        let isPollingActive = false;
+        let lastPollTime = 0;
+
+        // Load initial directory (home)
+        window.addEventListener('DOMContentLoaded', () => {
+            loadDirectory();
+            startPolling();
+        });
+
+        // Stop polling when page is hidden, resume when visible (performance optimization)
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                stopPolling();
+            } else {
+                startPolling();
+            }
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            stopPolling();
+        });
+
+        function updatePollingIndicator(active) {
+            const indicator = document.getElementById('pollingIndicator');
+            if (indicator) {
+                if (active) {
+                    indicator.classList.remove('inactive');
+                    indicator.title = 'Auto-refresh active - watching for changes';
+                } else {
+                    indicator.classList.add('inactive');
+                    indicator.title = 'Auto-refresh paused';
+                }
+            }
+        }
+
+        function startPolling() {
+            if (isPollingActive || !currentPath) return;
+            
+            isPollingActive = true;
+            updatePollingIndicator(true);
+            pollDirectoryState();
+        }
+
+        function stopPolling() {
+            isPollingActive = false;
+            updatePollingIndicator(false);
+            if (pollingInterval) {
+                clearTimeout(pollingInterval);
+                pollingInterval = null;
+            }
+        }
+
+        async function pollDirectoryState() {
+            if (!isPollingActive || !currentPath) {
+                return;
+            }
+
+            const now = Date.now();
+            // Throttle: don't poll more frequently than the backoff interval
+            if (now - lastPollTime < pollingBackoff) {
+                pollingInterval = setTimeout(pollDirectoryState, pollingBackoff - (now - lastPollTime));
+                return;
+            }
+
+            lastPollTime = now;
+
+            try {
+                const startTime = performance.now();
+                const response = await fetch(`/api/directory-state?path=${encodeURIComponent(currentPath)}&_=${Date.now()}`);
+                const responseTime = performance.now() - startTime;
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.error) {
+                    // Error - increase backoff
+                    pollingBackoff = Math.min(pollingBackoff * BACKOFF_MULTIPLIER, MAX_POLL_INTERVAL);
+                    pollingInterval = setTimeout(pollDirectoryState, pollingBackoff);
+                    return;
+                }
+
+                // Check if directory state changed
+                if (data.hash !== lastDirectoryHash) {
+                    lastDirectoryHash = data.hash;
+                    
+                    // Directory changed - refresh views
+                    await refreshDirectoryViews();
+                    
+                    // Reset backoff on successful change detection
+                    pollingBackoff = SUCCESS_RESET_INTERVAL;
+                } else {
+                    // No change - gradually increase backoff (exponential backoff)
+                    pollingBackoff = Math.min(pollingBackoff * BACKOFF_MULTIPLIER, MAX_POLL_INTERVAL);
+                }
+
+                // Adjust backoff based on response time (resource awareness)
+                if (responseTime > 500) {
+                    // Slow response - increase backoff more aggressively
+                    pollingBackoff = Math.min(pollingBackoff * 1.2, MAX_POLL_INTERVAL);
+                } else if (responseTime < 100) {
+                    // Fast response - can poll more frequently
+                    pollingBackoff = Math.max(pollingBackoff * 0.9, MIN_POLL_INTERVAL);
+                }
+
+            } catch (error) {
+                // Network error or other issue - exponential backoff
+                console.warn('Polling error:', error);
+                pollingBackoff = Math.min(pollingBackoff * BACKOFF_MULTIPLIER, MAX_POLL_INTERVAL);
+            }
+
+            // Schedule next poll
+            if (isPollingActive) {
+                pollingInterval = setTimeout(pollDirectoryState, pollingBackoff);
+            }
+        }
+
+        async function refreshDirectoryViews() {
+            // Refresh directory listing (skip polling restart to avoid loop)
+            await loadDirectory(currentPath, true);
+            
+            // Refresh directory structure if we're on results tab
+            const resultsTab = document.getElementById('resultsTab');
+            if (resultsTab && resultsTab.classList.contains('active')) {
+                const structureDiv = document.getElementById('directoryStructure');
+                if (structureDiv) {
+                    // Get folder status from last cleanup if available
+                    const folderStatus = window.lastFolderStatus || {};
+                    await loadDirectoryStructure(currentPath, folderStatus);
+                }
+            }
+            
+            // Refresh logs if we're on logs tab
+            const logsTab = document.getElementById('logsTab');
+            if (logsTab && logsTab.classList.contains('active')) {
+                await loadLogs();
+            }
+        }
+
+        async function loadDirectory(path = '', skipPollingRestart = false) {
+            const loading = document.getElementById('directoryList');
+            loading.innerHTML = '<div class="loading">Loading...</div>';
+
+            try {
+                const response = await fetch(`/api/directory?path=${encodeURIComponent(path)}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    loading.innerHTML = `<div class="error">Error: ${data.error}</div>`;
+                    stopPolling();
+                    return;
+                }
+
+                const pathChanged = currentPath !== data.current_path;
+                currentPath = data.current_path;
+                parentPath = data.parent_path;
+                document.getElementById('pathInput').value = currentPath;
+
+                // Restart polling if path changed (unless we're refreshing)
+                if (pathChanged && !skipPollingRestart) {
+                    stopPolling();
+                    lastDirectoryHash = null;
+                    pollingBackoff = SUCCESS_RESET_INTERVAL;
+                    startPolling();
+                }
+
+                // Update breadcrumbs
+                updateBreadcrumbs(data.breadcrumbs);
+
+                // Display directories and files
+                let html = '';
+
+                if (data.parent_path && data.parent_path !== data.current_path) {
+                    html += `<div class="directory-item" onclick="loadDirectory('${data.parent_path}')">
+                        <span class="directory-icon">📁</span>
+                        <span>.. (parent directory)</span>
+                    </div>`;
+                }
+
+                data.directories.forEach(dir => {
+                    html += `<div class="directory-item" onclick="loadDirectory('${dir.path}')">
+                        <span class="directory-icon">📁</span>
+                        <span>${escapeHtml(dir.name)}</span>
+                    </div>`;
+                });
+
+                if (data.files.length > 0) {
+                    html += `<div style="padding: 10px 15px; background: #f8f9fa; border-top: 2px solid #e0e0e0; border-bottom: 2px solid #e0e0e0; color: #666; font-size: 0.9em;">
+                        📄 Files (${data.files.length} files, not selectable)
+                    </div>`;
+                    data.files.slice(0, 10).forEach(file => {
+                        const size = formatFileSize(file.size);
+                        html += `<div class="file-item">
+                            <span class="file-icon">📄</span>
+                            <span>${escapeHtml(file.name)}</span>
+                            <span style="margin-left: auto; color: #999; font-size: 0.85em;">${size}</span>
+                        </div>`;
+                    });
+                    if (data.files.length > 10) {
+                        html += `<div class="file-item" style="color: #999; font-style: italic;">
+                            ... and ${data.files.length - 10} more files
+                        </div>`;
+                    }
+                }
+
+                if (html === '') {
+                    html = '<div style="padding: 40px; text-align: center; color: #999;">Empty directory</div>';
+                }
+
+                loading.innerHTML = html;
+            } catch (error) {
+                loading.innerHTML = `<div class="error">Error loading directory: ${error.message}</div>`;
+            }
+        }
+
+        function updateBreadcrumbs(breadcrumbs) {
+            const container = document.getElementById('breadcrumbs');
+            container.innerHTML = '';
+
+            breadcrumbs.forEach((crumb, index) => {
+                const span = document.createElement('span');
+                span.className = 'breadcrumb';
+                span.textContent = crumb.name || '/';
+                span.onclick = () => loadDirectory(crumb.path);
+                container.appendChild(span);
+            });
+        }
+
+        function goToPath() {
+            const path = document.getElementById('pathInput').value.trim();
+            if (path) {
+                loadDirectory(path);
+            }
+        }
+
+        function goHome() {
+            loadDirectory();
+        }
+
+        function goUp() {
+            if (parentPath && parentPath !== currentPath) {
+                loadDirectory(parentPath);
+            } else if (currentPath) {
+                // Fallback: try to calculate parent path
+                const parts = currentPath.split(/[/\\]/).filter(p => p);
+                if (parts.length > 0) {
+                    const calculatedParent = parts.slice(0, -1).join('/') || '/';
+                    if (calculatedParent !== currentPath) {
+                        loadDirectory(calculatedParent);
+                    }
+                }
+            }
+        }
+
+        async function runCleanup() {
+            if (!currentPath) {
+                showStatus('error', 'Please select a directory first');
+                return;
+            }
+
+            const btn = document.getElementById('cleanupBtn');
+            const statusDiv = document.getElementById('cleanupStatus');
+            btn.disabled = true;
+            btn.textContent = '⏳ Organizing...';
+
+            const nonInteractive = document.getElementById('nonInteractive').checked;
+            const overwrite = document.getElementById('overwrite').checked;
+
+            try {
+                const response = await fetch('/api/cleanup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        path: currentPath,
+                        non_interactive: nonInteractive,
+                        overwrite: overwrite
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    showStatus('error', `Error: ${data.error}`);
+                } else {
+                    showStatus('success', `Successfully organized ${data.file_count} file(s)!`);
+                    await displayResults(data);
+                    // Auto-switch to results tab
+                    switchTab('results');
+                    // Refresh directory view
+                    loadDirectory(currentPath);
+                }
+            } catch (error) {
+                showStatus('error', `Error: ${error.message}`);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🚀 Organize Files';
+            }
+        }
+
+        function showStatus(type, message) {
+            const statusDiv = document.getElementById('cleanupStatus');
+            statusDiv.innerHTML = `<div class="${type}">${escapeHtml(message)}</div>`;
+            setTimeout(() => {
+                statusDiv.innerHTML = '';
+            }, 5000);
+        }
+
+        let historyChart = null;
+
+        async function displayResults(data) {
+            const content = document.getElementById('resultsContent');
+            
+            let html = '<div class="stats">';
+            html += `<div class="stat-card">
+                <div class="stat-value">${data.file_count}</div>
+                <div class="stat-label">Files Organized</div>
+            </div>`;
+            html += `<div class="stat-card">
+                <div class="stat-value">${Object.keys(data.moved_files).length}</div>
+                <div class="stat-label">Folders</div>
+            </div>`;
+            html += `<div class="stat-card">
+                <div class="stat-value">${data.is_organized ? '✓' : '✗'}</div>
+                <div class="stat-label">Verification</div>
+            </div>`;
+            html += '</div>';
+
+            // Add graph container
+            html += '<div class="chart-container">';
+            html += '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">';
+            html += '<h3 style="margin: 0; color: #667eea;">📈 Cleanup History Over Time</h3>';
+            html += '<button class="btn-secondary" onclick="loadAndRenderHistoryChart()" style="padding: 6px 12px; font-size: 0.9em;">🔄 Refresh</button>';
+            html += '</div>';
+            html += '<canvas id="historyChart" style="max-height: 300px;"></canvas>';
+            html += '</div>';
+
+            html += '<div class="results">';
+            for (const [folder, files] of Object.entries(data.moved_files)) {
+                const status = data.folder_status[folder] ? 'EXISTING' : 'NEW';
+                const statusColor = data.folder_status[folder] ? '#6c757d' : '#28a745';
+                
+                html += `<div class="result-item">
+                    <h3>📁 ${escapeHtml(folder)}/ <span style="color: ${statusColor}; font-size: 0.8em;">(${status})</span></h3>
+                    <div>${files.length} file(s) moved:</div>
+                    <ul class="file-list">
+                        ${files.map(file => `<li>${escapeHtml(file)}</li>`).join('')}
+                    </ul>
+                </div>`;
+            }
+            html += '</div>';
+
+            // Add directory structure container
+            html += '<div class="directory-tree">';
+            html += '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">';
+            html += '<h3 style="margin: 0; color: #667eea;">📂 Directory Structure After Cleanup</h3>';
+            html += '<div style="display: flex; gap: 8px;">';
+            html += '<button class="btn-secondary" onclick="expandAllFolders()" style="padding: 6px 12px; font-size: 0.85em;">Expand All</button>';
+            html += '<button class="btn-secondary" onclick="collapseAllFolders()" style="padding: 6px 12px; font-size: 0.85em;">Collapse All</button>';
+            html += '</div>';
+            html += '</div>';
+            html += '<div id="directoryStructure">Loading...</div>';
+            html += '</div>';
+
+            content.innerHTML = html;
+
+            // Load and render graph
+            await loadAndRenderHistoryChart();
+
+            // Store folder status for later use
+            window.lastFolderStatus = data.folder_status || {};
+            
+            // Load directory structure - use directory from cleanup response
+            const cleanupPath = data.directory || currentPath;
+            if (cleanupPath) {
+                await loadDirectoryStructure(cleanupPath, window.lastFolderStatus);
+            }
+        }
+
+        async function loadAndRenderHistoryChart() {
+            try {
+                const response = await fetch('/api/cleanup-history');
+                const data = await response.json();
+
+                if (data.history && data.history.length > 0) {
+                    const ctx = document.getElementById('historyChart');
+                    if (!ctx) return;
+
+                    // Destroy existing chart if it exists
+                    if (historyChart) {
+                        historyChart.destroy();
+                    }
+
+                    // Prepare data
+                    const labels = data.history.map(h => {
+                        const date = new Date(h.timestamp);
+                        return date.toLocaleString();
+                    });
+                    const fileCounts = data.history.map(h => h.file_count);
+                    const folderCounts = data.history.map(h => h.folder_count);
+
+                    historyChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [
+                                {
+                                    label: 'Files Organized',
+                                    data: fileCounts,
+                                    borderColor: 'rgb(102, 126, 234)',
+                                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                                    tension: 0.4,
+                                    fill: true
+                                },
+                                {
+                                    label: 'Folders Created',
+                                    data: folderCounts,
+                                    borderColor: 'rgb(118, 75, 162)',
+                                    backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                                    tension: 0.4,
+                                    fill: true
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'top'
+                                },
+                                tooltip: {
+                                    mode: 'index',
+                                    intersect: false
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        stepSize: 1
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    const ctx = document.getElementById('historyChart');
+                    if (ctx) {
+                        ctx.parentElement.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">No cleanup history yet. Perform cleanup operations to see trends over time.</p>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading history:', error);
+                const ctx = document.getElementById('historyChart');
+                if (ctx) {
+                    ctx.parentElement.innerHTML = '<p style="text-align: center; color: #dc3545; padding: 20px;">Error loading history chart</p>';
+                }
+            }
+        }
+
+        async function loadDirectoryStructure(path, folderStatus = {}) {
+            const structureDiv = document.getElementById('directoryStructure');
+            if (!structureDiv) return;
+
+            try {
+                const response = await fetch(`/api/directory-structure?path=${encodeURIComponent(path)}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    structureDiv.innerHTML = `<div class="error">Error: ${data.error}</div>`;
+                    return;
+                }
+
+                if (data.structure) {
+                    structureDiv.innerHTML = renderTree(data.structure, 0, folderStatus);
+                    // Attach click handlers after rendering
+                    attachTreeHandlers();
+                } else {
+                    structureDiv.innerHTML = '<p style="color: #999;">Unable to load directory structure</p>';
+                }
+            } catch (error) {
+                structureDiv.innerHTML = `<div class="error">Error loading structure: ${error.message}</div>`;
+            }
+        }
+
+        function renderTree(node, depth, folderStatus = {}, parentId = '') {
+            if (!node) return '';
+            
+            const nodeId = parentId ? `${parentId}-${node.name}` : node.name;
+            const isDirectory = node.type === 'directory';
+            const hasChildren = node.children && node.children.length > 0;
+            
+            // Check if this folder was created (NEW) or existed (EXISTING)
+            const isNewFolder = folderStatus[node.name] === false; // false means NEW
+            const isExistingFolder = folderStatus[node.name] === true; // true means EXISTING
+            
+            // Start with created folders expanded, others collapsed
+            const shouldStartExpanded = isNewFolder && hasChildren;
+            
+            let html = '';
+            
+            if (isDirectory) {
+                const folderClass = isNewFolder ? 'tree-folder-new' : (isExistingFolder ? 'tree-folder-existing' : '');
+                const toggleClass = shouldStartExpanded ? 'expanded' : '';
+                
+                html += `<div class="tree-item directory ${folderClass}" data-node-id="${nodeId}">`;
+                html += `<span class="tree-toggle ${toggleClass}" data-toggle-id="${nodeId}"></span>`;
+                html += `<span class="tree-icon">📁</span>`;
+                html += `<span>${escapeHtml(node.name)}/</span>`;
+                if (isNewFolder) {
+                    html += `<span style="color: #28a745; font-size: 0.8em; margin-left: 8px;">(NEW)</span>`;
+                } else if (isExistingFolder) {
+                    html += `<span style="color: #6c757d; font-size: 0.8em; margin-left: 8px;">(EXISTING)</span>`;
+                }
+                html += `</div>`;
+                
+                if (hasChildren) {
+                    const childrenClass = shouldStartExpanded ? 'expanded' : '';
+                    html += `<div class="tree-children ${childrenClass}" data-children-id="${nodeId}">`;
+                    
+                    // Sort: directories first, then files
+                    const sorted = [...node.children].sort((a, b) => {
+                        if (a.type === 'directory' && b.type === 'file') return -1;
+                        if (a.type === 'file' && b.type === 'directory') return 1;
+                        return a.name.localeCompare(b.name);
+                    });
+                    
+                    sorted.forEach(child => {
+                        html += renderTree(child, depth + 1, folderStatus, nodeId);
+                    });
+                    
+                    html += `</div>`;
+                }
+            } else {
+                // File
+                const size = node.size ? ` <span style="color: #999; font-size: 0.85em;">(${formatFileSize(node.size)})</span>` : '';
+                html += `<div class="tree-item file">`;
+                html += `<span class="tree-icon">📄</span>`;
+                html += `<span>${escapeHtml(node.name)}${size}</span>`;
+                html += `</div>`;
+            }
+
+            return html;
+        }
+
+        function attachTreeHandlers() {
+            // Attach click handlers to all directory toggles
+            document.querySelectorAll('.tree-toggle').forEach(toggle => {
+                toggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const nodeId = this.getAttribute('data-toggle-id');
+                    toggleFolder(nodeId);
+                });
+            });
+
+            // Attach click handlers to directory items (to toggle on click)
+            document.querySelectorAll('.tree-item.directory').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('tree-toggle')) return;
+                    const nodeId = this.getAttribute('data-node-id');
+                    toggleFolder(nodeId);
+                });
+            });
+        }
+
+        function toggleFolder(nodeId) {
+            const toggle = document.querySelector(`[data-toggle-id="${nodeId}"]`);
+            const children = document.querySelector(`[data-children-id="${nodeId}"]`);
+            
+            if (!toggle || !children) return;
+            
+            const isExpanded = toggle.classList.contains('expanded');
+            
+            if (isExpanded) {
+                toggle.classList.remove('expanded');
+                children.classList.remove('expanded');
+            } else {
+                toggle.classList.add('expanded');
+                children.classList.add('expanded');
+            }
+        }
+
+        function expandAllFolders() {
+            document.querySelectorAll('.tree-toggle').forEach(toggle => {
+                if (!toggle.classList.contains('expanded')) {
+                    const nodeId = toggle.getAttribute('data-toggle-id');
+                    const children = document.querySelector(`[data-children-id="${nodeId}"]`);
+                    if (children) {
+                        toggle.classList.add('expanded');
+                        children.classList.add('expanded');
+                    }
+                }
+            });
+        }
+
+        function collapseAllFolders() {
+            document.querySelectorAll('.tree-toggle').forEach(toggle => {
+                if (toggle.classList.contains('expanded')) {
+                    const nodeId = toggle.getAttribute('data-toggle-id');
+                    const children = document.querySelector(`[data-children-id="${nodeId}"]`);
+                    if (children) {
+                        toggle.classList.remove('expanded');
+                        children.classList.remove('expanded');
+                    }
+                }
+            });
+        }
+
+        async function loadLogs() {
+            if (!currentPath) {
+                document.getElementById('logsContent').innerHTML = '<div class="error">Please select a directory first</div>';
+                return;
+            }
+
+            const content = document.getElementById('logsContent');
+            content.innerHTML = '<div class="loading">Loading logs...</div>';
+
+            try {
+                const response = await fetch(`/api/logs?path=${encodeURIComponent(currentPath)}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    content.innerHTML = `<div class="error">Error: ${data.error}</div>`;
+                } else {
+                    if (data.exists) {
+                        content.innerHTML = `<div class="log-content">${escapeHtml(data.content)}</div>`;
+                    } else {
+                        content.innerHTML = `<div style="padding: 40px; text-align: center; color: #999;">${escapeHtml(data.content)}</div>`;
+                    }
+                }
+            } catch (error) {
+                content.innerHTML = `<div class="error">Error loading logs: ${error.message}</div>`;
+            }
+        }
+
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName + 'Tab').classList.add('active');
+
+            // Auto-load content based on tab
+            if (tabName === 'logs') {
+                loadLogs();
+            } else if (tabName === 'results') {
+                // Refresh graph when switching to results tab
+                loadAndRenderHistoryChart();
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        // Allow Enter key in path input
+        document.getElementById('pathInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                goToPath();
+            }
+        });
+
+        // Server Control Functions
+        async function showServerControls() {
+            const modal = document.getElementById('serverModal');
+            modal.style.display = 'block';
+            await loadServerStatus();
+        }
+
+        function closeServerModal() {
+            const modal = document.getElementById('serverModal');
+            modal.style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('serverModal');
+            if (event.target === modal) {
+                closeServerModal();
+            }
+        }
+
+        async function loadServerStatus() {
+            const statusDiv = document.getElementById('serverStatus');
+            try {
+                const response = await fetch('/api/server/status');
+                const data = await response.json();
+
+                if (data.error) {
+                    statusDiv.innerHTML = `<div class="error">Error: ${data.error}</div>`;
+                    return;
+                }
+
+                statusDiv.innerHTML = `
+                    <div class="status-item">
+                        <span class="status-label">Status:</span>
+                        <span class="status-value">${escapeHtml(data.status)}</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Host:</span>
+                        <span class="status-value">${escapeHtml(data.host)}</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Port:</span>
+                        <span class="status-value">${escapeHtml(data.port)}</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Security:</span>
+                        <span class="status-value security">${escapeHtml(data.security)}</span>
+                    </div>
+                `;
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="error">Error loading server status: ${error.message}</div>`;
+            }
+        }
+
+        async function stopServer() {
+            const btn = document.getElementById('stopBtn');
+            const messageDiv = document.getElementById('serverMessage');
+            
+            if (!confirm('Are you sure you want to stop the server? You will need to restart it manually.')) {
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = '⏹️ Stopping...';
+            messageDiv.innerHTML = '<div class="loading">Stopping server...</div>';
+
+            try {
+                const response = await fetch('/api/server/stop', {
+                    method: 'POST'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    messageDiv.innerHTML = '<div class="success">Server is shutting down. This page will become unavailable.</div>';
+                    // Redirect after a delay
+                    setTimeout(() => {
+                        window.location.href = 'about:blank';
+                    }, 2000);
+                } else {
+                    messageDiv.innerHTML = `<div class="error">Error: ${data.error || 'Unknown error'}</div>`;
+                    btn.disabled = false;
+                    btn.textContent = '⏹️ Stop Server';
+                }
+            } catch (error) {
+                messageDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+                btn.disabled = false;
+                btn.textContent = '⏹️ Stop Server';
+            }
+        }
+
+        async function restartServer() {
+            const btn = document.getElementById('restartBtn');
+            const messageDiv = document.getElementById('serverMessage');
+            
+            if (!confirm('Are you sure you want to restart the server? You will need to restart it manually from the command line.')) {
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = '🔄 Restarting...';
+            messageDiv.innerHTML = '<div class="loading">Sending restart signal...</div>';
+
+            try {
+                // Use a timeout to handle cases where server stops before response
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+                
+                const response = await fetch('/api/server/restart', {
+                    method: 'POST',
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+                const data = await response.json();
+
+                if (data.success) {
+                    let message = '<div class="success">Server restart signal sent. The server will stop shortly.</div>';
+                    if (data.restart_command) {
+                        message += `<div style="margin-top: 10px; padding: 10px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; font-family: monospace; font-size: 0.9em;">`;
+                        message += `<strong>To restart, run:</strong><br>${escapeHtml(data.restart_command)}`;
+                        message += `</div>`;
+                    }
+                    messageDiv.innerHTML = message;
+                } else {
+                    messageDiv.innerHTML = `<div class="error">Error: ${data.error || 'Unknown error'}</div>`;
+                    btn.disabled = false;
+                    btn.textContent = '🔄 Restart Server';
+                }
+            } catch (error) {
+                // If we get an error, it might be because the server stopped
+                // This is actually expected behavior
+                if (error.name === 'AbortError' || error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                    messageDiv.innerHTML = `
+                        <div class="success">Server restart signal was sent. The server is stopping.</div>
+                        <div style="margin-top: 10px; padding: 10px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px;">
+                            <strong>To restart the server, run:</strong><br>
+                            <code style="font-family: monospace; font-size: 0.9em;">python3 Easy-File-Cleanup.py --html</code>
+                        </div>
+                    `;
+                } else {
+                    messageDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+                    btn.disabled = false;
+                    btn.textContent = '🔄 Restart Server';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
+

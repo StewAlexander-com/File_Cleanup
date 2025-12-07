@@ -301,10 +301,20 @@ def get_directory_from_args_or_input(args_path: Optional[str] = None) -> Optiona
 
 
 def main():
-    """Main execution flow."""
+    """
+    Main execution flow for file cleanup application.
+    
+    Handles command-line argument parsing, directory selection, file organization,
+    and web interface launching. Returns appropriate exit codes for automation.
+    
+    Returns:
+        int: Exit code (0 for success, 1 for error, 130 for KeyboardInterrupt)
+    """
     parser = argparse.ArgumentParser(
+        prog='Easy-File-Cleanup.py',
         description='File Organizer - Organizes files by extension into dedicated folders',
         formatter_class=argparse.RawDescriptionHelpFormatter,
+        add_help=True,
         epilog="""
 USAGE EXAMPLES:
   Basic Usage:
@@ -312,12 +322,17 @@ USAGE EXAMPLES:
     %(prog)s Downloads                       # Find and organize Downloads folder
     %(prog)s ~/Documents                     # Organize Documents in home directory
     %(prog)s                                 # Interactive mode (prompts for directory)
+    %(prog)s --help                          # Show this help message
 
   Automation/Non-Interactive Mode:
     %(prog)s Downloads --yes                 # Auto-create copies for duplicates (scriptable)
     %(prog)s Downloads --non-interactive     # Same as --yes
     %(prog)s Downloads --overwrite           # Auto-overwrite duplicates (use with caution)
     %(prog)s Downloads --quiet               # Minimal output (for scripts)
+
+  Web Interface:
+    %(prog)s --html                          # Launch web-based GUI interface
+                                             # (Requires Flask: pip install Flask)
 
   Combined Options:
     %(prog)s ~/Downloads --yes --quiet       # Fully automated, minimal output
@@ -338,6 +353,24 @@ OUTPUT:
   - Files without extensions go to no_extension/
   - Generates organization_log.txt with history
   - Verifies organization after completion
+
+INSTALLATION:
+  - No installation required (uses Python standard library)
+  - For web interface: pip install Flask
+  - Make executable: chmod +x Easy-File-Cleanup.py
+
+EXAMPLES:
+  # Quick organize
+  %(prog)s ~/Downloads
+
+  # Web interface
+  %(prog)s --html
+
+  # Automated cleanup
+  %(prog)s Downloads --yes --quiet
+
+  # Get help
+  %(prog)s --help
 
 For more information, visit: https://github.com/stewartalexander/File_Cleanup
         """
@@ -368,8 +401,45 @@ For more information, visit: https://github.com/stewartalexander/File_Cleanup
         action='store_true',
         help='Minimal output (useful for automation scripts)'
     )
+    parser.add_argument(
+        '--html',
+        action='store_true',
+        help='Launch web-based GUI interface (requires Flask: pip install Flask)'
+    )
     
     args = parser.parse_args()
+    
+    # If --html flag is set, launch web interface
+    if args.html:
+        try:
+            from web_interface import run_server
+        except ImportError as e:
+            error_msg = str(e).lower()
+            if 'flask' in error_msg or 'web_interface' in error_msg:
+                if not args.quiet:
+                    print("\n" + "=" * 60)
+                    print("✗ Flask is required for web interface mode")
+                    print("=" * 60)
+                    print("\n📦 INSTALLATION INSTRUCTIONS:")
+                    print("\n  Option 1: Install Flask only")
+                    print("    pip install Flask")
+                    print("\n  Option 2: Install from requirements file")
+                    print("    pip install -r requirements.txt")
+                    print("\n" + "-" * 60)
+                    print("ℹ️  NOTE: The script works normally without --html flag.")
+                    print("   You can use all CLI features without Flask installed.")
+                    print("=" * 60 + "\n")
+            else:
+                if not args.quiet:
+                    print(f"\n✗ Error importing web interface: {e}\n")
+            return 1
+        except Exception as e:
+            if not args.quiet:
+                print(f"\n✗ Error loading web interface: {e}\n")
+            return 1
+        
+        run_server()
+        return 0
     
     # Determine non-interactive mode
     non_interactive = args.yes or args.non_interactive
