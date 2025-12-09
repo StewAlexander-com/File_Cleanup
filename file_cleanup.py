@@ -493,7 +493,7 @@ EXAMPLES:
   # Get help
   %(prog)s --help
 
-For more information, visit: https://github.com/stewartalexander/File_Cleanup
+For more information, visit: https://github.com/StewAlexander-com/File_Cleanup
         """
     )
     parser.add_argument(
