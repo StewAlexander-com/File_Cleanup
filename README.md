@@ -21,7 +21,7 @@ Organizes files by extension into dedicated folders to quickly clean up messy di
   - [Table of Contents](#table-of-contents)
   - [Installation](#installation)
   - [Quick Start](#quick-start)
-    - [Web Interface (Recommended for beginners)](#web-interface-recommended-for-beginners)
+    - [Web Interface (CLI)](#web-interface-cli)
     - [Terminal Interface (TUI)](#terminal-interface-tui)
     - [Command Line (Automation)](#command-line-automation)
   - [Desktop Apps (PyInstaller)](#desktop-apps-pyinstaller)
@@ -66,7 +66,10 @@ Fastest path: download the desktop app for your OS (no Python/Flask needed) and 
 Prefer the CLI instead? Use the commands below.
 
 ### Web Interface (CLI)
-Runs in your browser with a visual directory tree.
+Runs in your browser with a visual directory tree. Requires Flask to be installed:
+```bash
+pip install Flask
+```
 ```bash
 python3 Easy-File-Cleanup.py --html
 ```
