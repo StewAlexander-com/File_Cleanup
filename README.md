@@ -59,10 +59,14 @@ pip install Flask
 
 ## Quick Start
 
-Recommended: download the desktop app for your OS (no Python/Flask needed). If you prefer or need the terminal, use the CLI options below.
+Fastest path: download the desktop app for your OS (no Python/Flask needed) and double-click:
+- macOS app: [Mac File Cleanup](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Mac%20File%20Cleanup)
+- Windows app: [Win-File-Cleanup.exe](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Win-File-Cleanup.exe)
 
-### Web Interface (Recommended for beginners)
-Best for most users; runs in your browser with a visual directory tree.
+Prefer the CLI instead? Use the commands below.
+
+### Web Interface (CLI)
+Runs in your browser with a visual directory tree.
 ```bash
 python3 Easy-File-Cleanup.py --html
 ```
