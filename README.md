@@ -50,12 +50,10 @@ Organizes files by extension into dedicated folders to quickly clean up messy di
 git clone https://github.com/StewAlexander-com/File_Cleanup.git
 cd File_Cleanup
 
-# Make executable (macOS/Linux only; Windows can skip)
+# Make executable (macOS/Linux only - Windows users skip this)
 chmod +x Easy-File-Cleanup.py
-```
 
-**Flask (only needed for CLI --html; desktop apps already bundle it):**
-```bash
+# Flask (only needed for CLI --html; desktop apps already bundle it)
 pip install Flask
 ```
 
@@ -84,6 +82,8 @@ Fully automated, no prompts. See [Automation Guide](#automation--scripting) belo
 
 ## Desktop Apps (PyInstaller)
 
+**Standalone apps with Python and Flask bundled — no installation required.**
+
 Prefer double-click over the command line? Build or download a small desktop launcher for the web UI. The CLI/TUI stay exactly the same.
 
 - **Download ready-to-run apps (no Python needed)**:
@@ -103,7 +103,7 @@ Prefer double-click over the command line? Build or download a small desktop lau
 
 ### Core Functionality
 - Automatic file organization by extension
-- Duplicate handling (interactive or automatic) — choose overwrite, copy, or keep both
+- Duplicate handling (interactive or automatic) — prompts you to overwrite, create copies, or keep both versions
 - Verification of organization — checks moves and logs actions
 - Detailed logging
 - Cross-platform (Windows, macOS, Linux)
