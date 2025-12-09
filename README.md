@@ -1,15 +1,16 @@
 # Easy File Cleanup
 
-Organizes files by extension into dedicated folders. Perfect for cleaning up cluttered directories.
+Organizes files by extension into dedicated folders to quickly clean up messy directories (like Downloads) on any OS. Files are only moved inside the folder you choose, and an `organization_log.txt` records every change.
 
 ## At a Glance
 
 - **What it does**: Automatically sorts files into folders by their extension (pdf/, jpg/, txt/, etc.)
-- **Who it's for**: Non-technical users (web UI), terminal users (TUI), and developers/devops (automation)
-- **Quick start**: Download the app and double-click (Flask already bundled)  
+- **Who it's for**: Non-technical users (web UI), terminal users (Terminal/TUI full-screen text UI), developers and power users (automation/cron/CI)
+- **Quick start**: Recommended for most: download and double-click (no Python/Flask needed)  
   - macOS: [Mac File Cleanup](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Mac%20File%20Cleanup)  
   - Windows: [Win-File-Cleanup.exe](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Win-File-Cleanup.exe)  
-  - Or CLI: `python3 Easy-File-Cleanup.py --html` (needs Flask installed) / `python3 Easy-File-Cleanup.py ~/Downloads`
+  - CLI (web UI): `python3 Easy-File-Cleanup.py --html`  # needs Flask installed  
+  - CLI (organize a folder): `python3 Easy-File-Cleanup.py ~/Downloads`
 
 ## Table of Contents
 
@@ -43,12 +44,15 @@ Organizes files by extension into dedicated folders. Perfect for cleaning up clu
 **Requirements**: Python 3.6+
 
 ```bash
+# Clone the repository
 git clone https://github.com/StewAlexander-com/File_Cleanup.git
 cd File_Cleanup
-chmod +x Easy-File-Cleanup.py  # macOS/Linux only
+
+# Make executable (macOS/Linux only; Windows can skip)
+chmod +x Easy-File-Cleanup.py
 ```
 
-**Optional**: For web interface, install Flask:
+**Flask (only needed for CLI --html; desktop apps already bundle it):**
 ```bash
 pip install Flask
 ```
@@ -56,20 +60,23 @@ pip install Flask
 ## Quick Start
 
 ### Web Interface (Recommended for beginners)
+Best for most users; runs in your browser with a visual directory tree.
 ```bash
 python3 Easy-File-Cleanup.py --html
 ```
 Opens in your browser automatically. See [Web Interface Guide](docs/web.md) for details, features, and troubleshooting.
 
 ### Terminal Interface (TUI)
+For terminal users who like keyboard navigation and a full-screen text UI.
 ```bash
 python3 Easy-File-Cleanup.py --tui ~/Downloads
 ```
 Full-screen terminal browser. See [TUI Guide](docs/tui.md) for keyboard shortcuts and navigation.
 
 ### Command Line (Automation)
+For scripts, cron jobs, and power users who want non-interactive runs.
 ```bash
-python3 Easy-File-Cleanup.py ~/Downloads --yes --quiet
+python3 Easy-File-Cleanup.py ~/Downloads --yes --quiet  # fully automated
 ```
 Fully automated, no prompts. See [Automation Guide](#automation--scripting) below or [example script](examples/automation.sh).
 
@@ -77,13 +84,13 @@ Fully automated, no prompts. See [Automation Guide](#automation--scripting) belo
 
 Prefer double-click over the command line? Build or download a small desktop launcher for the web UI. The CLI/TUI stay exactly the same.
 
-- **Download ready-to-run apps (recommended)**:
+- **Download ready-to-run apps (no Python needed)**:
   - macOS: [Mac File Cleanup](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Mac%20File%20Cleanup)
   - Windows: [Win-File-Cleanup.exe](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Win-File-Cleanup.exe)
   - Source zip: [EasyFileCleanup-2.5-source.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/EasyFileCleanup-2.5-source.zip)
-- **Run**: Double-click the downloaded file; the web UI opens on `http://127.0.0.1:<port>` (browser auto-opens).
-- **Dependencies**: Flask is already bundled in the apps; no install needed. For CLI `--html`, install Flask: `pip install Flask`.
-- **Security**: Localhost-only (no external access).
+- **Run**: Double-click; the web UI opens on `http://127.0.0.1:<port>` and your default browser opens automatically.
+- **Dependencies**: Python and Flask are already bundled in the apps; CLI `--html` still needs `pip install Flask`.
+- **Security**: Localhost-only; the app never exposes your files over the network.
 - **Build yourself (optional)**:
   - Requirements: Python 3.x, Flask (`pip install Flask`), PyInstaller (`pip install pyinstaller`)
   - macOS: `./scripts/build_gui_mac.sh`
@@ -94,8 +101,8 @@ Prefer double-click over the command line? Build or download a small desktop lau
 
 ### Core Functionality
 - Automatic file organization by extension
-- Duplicate handling (interactive or automatic)
-- Verification of organization
+- Duplicate handling (interactive or automatic) — choose overwrite, copy, or keep both
+- Verification of organization — checks moves and logs actions
 - Detailed logging
 - Cross-platform (Windows, macOS, Linux)
 
@@ -120,7 +127,7 @@ Prefer double-click over the command line? Build or download a small desktop lau
 6. Creates/updates `organization_log.txt`
 
 **Example output structure**:
-```
+```text
 Downloads/
 ├── pdf/
 │   ├── document1.pdf
@@ -138,10 +145,10 @@ Downloads/
 # Organize specific directory
 python3 Easy-File-Cleanup.py ~/Downloads
 
-# Partial path matching
+# Use partial path matching (from current/home)
 python3 Easy-File-Cleanup.py Downloads
 
-# Current directory
+# Organize the current directory
 python3 Easy-File-Cleanup.py .
 ```
 
@@ -158,8 +165,8 @@ python3 Easy-File-Cleanup.py
 |------|-------------|
 | `--html` | Launch web interface (requires Flask) |
 | `--tui` | Launch terminal interface |
-| `--yes` / `--non-interactive` | Auto-create copies for duplicates |
-| `--overwrite` | Auto-overwrite duplicates (use with caution) |
+| `--yes` / `--non-interactive` | Auto-create copies for duplicates (non-interactive; good for scripts) |
+| `--overwrite` | Auto-overwrite duplicates (use only if you’re sure) |
 | `--quiet` | Minimal output (for automation) |
 | `--help` | Show full help |
 
@@ -172,12 +179,12 @@ Fully automatable for cron jobs, CI/CD, and scripts.
 python3 Easy-File-Cleanup.py ~/Downloads --yes --quiet
 ```
 
-**Cron example**:
+**Cron example (Linux/macOS, runs daily at 2 AM)**:
 ```bash
 0 2 * * * /usr/bin/python3 /path/to/Easy-File-Cleanup.py ~/Downloads --yes --quiet
 ```
 
-**Exit codes**:
+**Exit codes** (CI/cron friendly):
 - `0`: Success
 - `1`: Error (invalid directory, organization failed)
 - `2`: Invalid arguments
@@ -198,13 +205,13 @@ Run the test suite:
 python3 test_file_cleanup.py
 ```
 
-**Test coverage**: 9 core tests + 18 web interface tests. All tests pass ✅
+**Test coverage**: 9 core tests + 18 web interface tests. All tests pass ✅ (no network required)
 
 For detailed testing information, see [TEST_PLAN.md](TEST_PLAN.md).
 
 ## Documentation
 
-**User Guides**:
+**User Guides** (start here):
 - [Web Interface Guide](docs/web.md) - Detailed web UI documentation, features, and troubleshooting
 - [TUI Guide](docs/tui.md) - Terminal interface navigation, keyboard shortcuts, and usage
 
@@ -228,13 +235,13 @@ Contributions welcome! See [Contributing Guidelines](CONTRIBUTING.md) for detail
 
 ## License
 
-Open source - available for use and modification.
+Open source — see repository for licensing details.
 
 ## Contact
 
 - **GitHub**: [@StewAlexander-com](https://github.com/StewAlexander-com)
 - **Repository**: [File_Cleanup](https://github.com/StewAlexander-com/File_Cleanup)
-- **Issues**: Open an issue on GitHub
+- **Issues**: Open an issue on GitHub (support is best-effort in spare time)
 
 ---
 
