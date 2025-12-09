@@ -2,6 +2,13 @@
 
 Organizes files by extension into dedicated folders to quickly clean up messy directories (like Downloads) on any OS. **Files are moved only within your chosen directory, and an `organization_log.txt` tracks every change so you can review what happened.**
 
+**Why this tool?**
+- **No network access** — runs entirely locally, your files never leave your machine
+- **Reversible** — complete log file tracks every move for easy review and undo
+- **Automation-friendly** — works great in cron jobs and CI/CD pipelines
+- **Multiple interfaces** — choose web UI, terminal UI, or command-line automation
+- **Cross-platform** — works on Windows, macOS, and Linux
+
 ## At a Glance
 
 - **What it does**: Automatically sorts files into folders by their extension (pdf/, jpg/, txt/, etc.)
@@ -111,46 +118,11 @@ Prefer double-click over the command line? Build or download a small desktop lau
 
 ### First Run Instructions (macOS)
 
-If you see a security warning when trying to open `Mac File Cleanup.app`, macOS is blocking the unsigned app. Follow these steps to allow it:
+If you see a security warning when trying to open `Mac File Cleanup.app`, macOS is blocking the unsigned app.
 
-1. **Download and unzip** `Mac-File-Cleanup.zip` to get `Mac File Cleanup.app`
+**Quick summary**: Download and unzip the app, try to open it (you'll see a warning), then go to **System Settings → Privacy & Security** and click **"Open Anyway"** next to the blocked app message. Confirm in the popup, then you can run the app normally.
 
-2. **Try to open the app** by double-clicking `Mac File Cleanup.app` (you'll see a security warning)
-
-3. **Open System Settings**:
-   - Click the Apple menu (🍎) in the top-left corner
-   - Select **System Settings** (or **System Preferences** on older macOS versions)
-
-4. **Go to Privacy & Security**:
-   - In the sidebar, click **Privacy & Security**
-   - Scroll down to the **Security** section
-
-5. **Click "Open Anyway"**:
-   - You should see a message about `Mac File Cleanup.app` being blocked
-   - Click the **"Open Anyway"** button next to the message
-
-6. **Confirm in the popup**:
-   - A popup window will appear asking you to confirm
-   - Click **"Allow Anyway"** (or **"Open"** depending on your macOS version)
-
-7. **Run the app**:
-   - After confirming, you can now double-click `Mac File Cleanup.app` normally
-   - The app will open and launch the web UI in your browser
-
-**Note**: You only need to do this once. After the first run, you can double-click the app normally without any security prompts.
-
-**Alternative method** (Terminal): If you prefer using Terminal, you can remove the quarantine attribute. First, navigate to the directory where you unzipped the app (e.g., `~/Downloads`), or use the full path:
-
-```bash
-# Option 1: Navigate to the app's directory first
-cd ~/Downloads  # or wherever you unzipped the app
-xattr -d com.apple.quarantine "Mac File Cleanup.app"
-
-# Option 2: Use the full path (replace ~/Downloads with your actual path)
-xattr -d com.apple.quarantine "~/Downloads/Mac File Cleanup.app"
-```
-
-**Option 3** (drag and drop): Type `xattr -d com.apple.quarantine ` (with a space at the end), then drag `Mac File Cleanup.app` from Finder into Terminal, and press Enter.
+For detailed step-by-step instructions with screenshots and alternative methods, see the [macOS First Run Guide](docs/macos-first-run.md).
 
 ## Features
 
@@ -279,6 +251,7 @@ For detailed testing information, see [TEST_PLAN.md](TEST_PLAN.md).
 **User Guides** (start here):
 - [Web Interface Guide](docs/web.md) - Detailed web UI documentation, features, and troubleshooting
 - [TUI Guide](docs/tui.md) - Terminal interface navigation, keyboard shortcuts, and usage
+- [macOS First Run Guide](docs/macos-first-run.md) - Step-by-step instructions for allowing the Mac app to run
 
 **Reference**:
 - [Test Plan](TEST_PLAN.md) - Testing strategy, coverage, and how to run tests
