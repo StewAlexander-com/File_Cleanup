@@ -7,8 +7,8 @@ Organizes files by extension into dedicated folders. Perfect for cleaning up clu
 - **What it does**: Automatically sorts files into folders by their extension (pdf/, jpg/, txt/, etc.)
 - **Who it's for**: Non-technical users (web UI), terminal users (TUI), and developers/devops (automation)
 - **Quick start**: Download the app and double-click (Flask already bundled)  
-  - macOS: [EasyFileCleanupGUI-mac](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.1/EasyFileCleanupGUI-mac)  
-  - Windows: [EasyFileCleanupGUI-windows.exe](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.1/EasyFileCleanupGUI-windows.exe)  
+  - macOS: [Mac File Cleanup](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v1.5/Mac%20File%20Cleanup)  
+  - Windows: [Win-File-Cleanup.exe](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v1.5/Win-File-Cleanup.exe)  
   - Or CLI: `python3 Easy-File-Cleanup.py --html` (needs Flask installed) / `python3 Easy-File-Cleanup.py ~/Downloads`
 
 ## Table of Contents
@@ -78,9 +78,9 @@ Fully automated, no prompts. See [Automation Guide](#automation--scripting) belo
 Prefer double-click over the command line? Build or download a small desktop launcher for the web UI. The CLI/TUI stay exactly the same.
 
 - **Download ready-to-run apps (recommended)**:
-  - macOS: [EasyFileCleanupGUI-mac](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.1/EasyFileCleanupGUI-mac)
-  - Windows: [EasyFileCleanupGUI-windows.exe](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.1/EasyFileCleanupGUI-windows.exe)
-  - Source zip: [EasyFileCleanup-2.1-source.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.1/EasyFileCleanup-2.1-source.zip)
+  - macOS: [Mac File Cleanup](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v1.5/Mac%20File%20Cleanup)
+  - Windows: [Win-File-Cleanup.exe](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v1.5/Win-File-Cleanup.exe)
+  - Source zip: [EasyFileCleanup-1.5-source.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v1.5/EasyFileCleanup-1.5-source.zip)
 - **Run**: Double-click the downloaded file; the web UI opens on `http://127.0.0.1:<port>` (browser auto-opens).
 - **Dependencies**: Flask is already bundled in the apps; no install needed. For CLI `--html`, install Flask: `pip install Flask`.
 - **Security**: Localhost-only (no external access).
@@ -238,4 +238,4 @@ Open source - available for use and modification.
 
 ---
 
-**Version**: 2.0 | **Last Updated**: December 2025
+**Version**: 1.5 | **Last Updated**: December 2025

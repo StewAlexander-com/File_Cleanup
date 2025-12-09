@@ -23,11 +23,11 @@ jobs:
 
       - name: Build GUI
         run: |
-          pyinstaller --onefile --windowed --name "EasyFileCleanupGUI" --add-data "templates;templates" gui_launcher.py
+          pyinstaller --onefile --windowed --name "Win-File-Cleanup" --add-data "templates;templates" gui_launcher.py
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: EasyFileCleanupGUI-windows
-          path: dist/EasyFileCleanupGUI.exe
+          name: Win-File-Cleanup
+          path: dist/Win-File-Cleanup.exe
 

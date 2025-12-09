@@ -19,12 +19,12 @@ python3 -m pip install -r requirements.txt
 pyinstaller \
   --onefile \
   --windowed \
-  --name "EasyFileCleanupGUI" \
+  --name "Mac File Cleanup" \
   --add-data "templates:templates" \
   gui_launcher.py
 
 echo ""
 echo "Build complete."
-echo "Launch via: dist/EasyFileCleanupGUI"
+echo "Launch via: dist/Mac File Cleanup"
 echo "(double-clickable app that starts the web UI on localhost)"
 
