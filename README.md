@@ -48,11 +48,9 @@ Organizes files by extension into dedicated folders to quickly clean up messy di
 **Requirements**: Python 3.6+
 
 ```bash
-# Clone the repository
 git clone https://github.com/StewAlexander-com/File_Cleanup.git
 cd File_Cleanup
 
-# Make executable (macOS/Linux only - Windows users skip this)
 chmod +x Easy-File-Cleanup.py
 
 # Only needed for CLI --html; desktop apps already bundle Flask
