@@ -59,10 +59,10 @@ pip install Flask
 
 ## Quick Start
 
-Fastest path: download the desktop app for your OS (no Python/Flask needed) and double-click:
-- macOS app: [Mac File Cleanup](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Mac-File-Cleanup)  
-  ⚠️ **First run**: Right-click the app and select "Open" if you see a security warning. See [Desktop Apps](#desktop-apps-pyinstaller) section for details.
-- Windows app: [Win-File-Cleanup.exe](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Win-File-Cleanup.exe)
+Fastest path: download the desktop app for your OS (no Python/Flask needed):
+- macOS: [Mac-File-Cleanup.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Mac-File-Cleanup.zip) — unzip, then double-click `Mac File Cleanup.app`  
+  ⚠️ **First run**: Right-click the `.app` and select "Open" if you see a security warning. See [Desktop Apps](#desktop-apps-pyinstaller) section for details.
+- Windows: [Win-File-Cleanup.exe](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Win-File-Cleanup.exe) — double-click to run
 
 Prefer the CLI instead? Use the commands below.
 
@@ -97,14 +97,16 @@ Fully automated, no prompts. See [Automation Guide](#automation--scripting) belo
 Prefer double-click over the command line? Build or download a small desktop launcher for the web UI. The CLI/TUI stay exactly the same.
 
 - **Download ready-to-run apps (no Python needed)**:
-  - macOS: [Mac File Cleanup](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Mac-File-Cleanup)
+  - macOS: [Mac-File-Cleanup.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Mac-File-Cleanup.zip) (contains `Mac File Cleanup.app` — unzip first, then double-click the `.app`)
   - Windows: [Win-File-Cleanup.exe](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Win-File-Cleanup.exe)
   - Source zip: [EasyFileCleanup-2.5-source.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/EasyFileCleanup-2.5-source.zip)
-- **First run (macOS)**: If you see a security warning, macOS is blocking the unsigned app. To allow it:
-  1. **Right-click** the app and select **"Open"** (this bypasses Gatekeeper), or
-  2. Go to **System Settings → Privacy & Security** and click **"Open Anyway"** next to the blocked app message, or
-  3. In Terminal: `xattr -d com.apple.quarantine "Mac File Cleanup.app"`
-  After the first run, you can double-click normally.
+- **First run (macOS)**: 
+  1. **Download and unzip** `Mac-File-Cleanup.zip` to get `Mac File Cleanup.app`
+  2. If you see a security warning, macOS is blocking the unsigned app. To allow it:
+     - **Right-click** the `.app` and select **"Open"** (this bypasses Gatekeeper), or
+     - Go to **System Settings → Privacy & Security** and click **"Open Anyway"** next to the blocked app message, or
+     - In Terminal: `xattr -d com.apple.quarantine "Mac File Cleanup.app"`
+  3. After the first run, you can double-click normally.
 - **Run**: Double-click; the web UI opens on `http://127.0.0.1:<port>` and your default browser opens automatically.
 - **Dependencies**: Python and Flask are already bundled in the apps; CLI `--html` still needs `pip install Flask`.
 - **Security**: Localhost-only; the app never exposes your files over the network or internet.
