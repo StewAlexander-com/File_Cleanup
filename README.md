@@ -182,9 +182,10 @@ xattr -d com.apple.quarantine ~/Downloads/"Mac File Cleanup.app"
 1. Scans directory for files (ignores hidden files)
 2. Creates folders by extension (pdf/, jpg/, txt/, etc.)
 3. Moves files into matching folders
-4. Handles duplicates (prompts or auto-creates copies)
-5. Verifies organization
-6. Creates/updates `organization_log.txt`
+4. Files without extensions go to `no_extension/` folder
+5. Handles duplicates (prompts or auto-creates copies)
+6. Verifies organization
+7. Creates/updates `organization_log.txt`
 
 **Example output structure**:
 ```text
@@ -194,6 +195,8 @@ Downloads/
 │   └── report.pdf
 ├── jpg/
 │   └── photo.jpg
+├── no_extension/
+│   └── README
 └── organization_log.txt
 ```
 
@@ -202,10 +205,13 @@ Downloads/
 ### Basic Command Line
 
 ```bash
-# Organize specific directory
+# Organize specific directory (full path)
+python3 Easy-File-Cleanup.py /Users/name/Downloads
+
+# Use home shortcut
 python3 Easy-File-Cleanup.py ~/Downloads
 
-# Use partial path matching (from current/home)
+# Use partial path matching (searches current directory and home)
 python3 Easy-File-Cleanup.py Downloads
 
 # Organize the current directory
@@ -256,7 +262,7 @@ See [examples/automation.sh](examples/automation.sh) for a complete automation s
 - No interactive prompts with `--yes`/`--non-interactive`/`--overwrite`
 - Silent operation with `--quiet` (errors to stderr)
 - Fast failure on invalid inputs
-- Flag validation prevents conflicts
+- Flag validation prevents conflicts: automation flags (`--yes`, `--non-interactive`, `--overwrite`, `--quiet`) cannot be combined with interactive flags (`--html`, `--tui`)
 
 ## Testing
 
