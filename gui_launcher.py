@@ -28,7 +28,9 @@ def main() -> int:
     except ImportError as exc:  # Flask not installed
         print(
             "\n✗ Flask is required for the desktop launcher.\n"
-            "  Install with:\n"
+            "  If you downloaded the packaged app, Flask should already be bundled.\n"
+            "  Please re-download the release asset.\n"
+            "\n  If running from source, install with:\n"
             "    pip install Flask\n"
             "  (The CLI still works without Flask.)\n"
         )

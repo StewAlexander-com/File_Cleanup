@@ -12,6 +12,10 @@ if ! command -v pyinstaller >/dev/null 2>&1; then
   exit 1
 fi
 
+# Ensure dependencies (Flask) are present so they are bundled
+python3 -m pip install --upgrade pip >/dev/null 2>&1 || true
+python3 -m pip install -r requirements.txt
+
 pyinstaller \
   --onefile \
   --windowed \
