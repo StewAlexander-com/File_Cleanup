@@ -16,6 +16,7 @@ build/
 develop-eggs/
 dist/
 dist-artifacts/
+dist-release/
 downloads/
 eggs/
 .eggs/
@@ -28,7 +29,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-EasyFileCleanupGUI.spec
+*.spec
 
 # Virtual environments
 venv/
