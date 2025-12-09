@@ -74,13 +74,17 @@ Fully automated, no prompts. See [Automation Guide](#automation--scripting) belo
 
 Prefer double-click over the command line? Build a small desktop launcher for the web UI. The CLI/TUI stay exactly the same.
 
-- **Requirements**: Python 3.x, Flask (`pip install Flask`), PyInstaller (`pip install pyinstaller`)
-- **macOS**: `./scripts/build_gui_mac.sh`
-- **Windows (via GitHub Actions)**: Trigger the `Build Windows GUI` workflow (`gh workflow run build-windows.yml`), then download the `EasyFileCleanupGUI-windows` artifact
-- **Windows (native)**: `powershell -ExecutionPolicy Bypass -File scripts/build_gui_windows.ps1`
-- **Output**: `dist/EasyFileCleanupGUI` (macOS) or `dist/EasyFileCleanupGUI.exe` (Windows)
-- **Usage**: Double-click the built app; it launches the HTML interface on `http://127.0.0.1:<port>` with auto-browser open
-- **Security**: Still localhost-only; no external access
+- **Download ready-to-run apps (recommended)**:
+  - macOS: [EasyFileCleanupGUI-mac](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.0/EasyFileCleanupGUI-mac)
+  - Windows: [EasyFileCleanupGUI-windows.exe](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.0/EasyFileCleanupGUI-windows.exe)
+  - Source zip: [EasyFileCleanup-2.0-source.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.0/EasyFileCleanup-2.0-source.zip)
+- **Run**: Double-click the downloaded file; the web UI opens on `http://127.0.0.1:<port>` (browser auto-opens).
+- **Security**: Localhost-only (no external access).
+- **Build yourself (optional)**:
+  - Requirements: Python 3.x, Flask (`pip install Flask`), PyInstaller (`pip install pyinstaller`)
+  - macOS: `./scripts/build_gui_mac.sh`
+  - Windows (via GitHub Actions): `gh workflow run build-windows.yml` then download the artifact
+  - Windows (native): `powershell -ExecutionPolicy Bypass -File scripts/build_gui_windows.ps1`
 
 ## Features
 

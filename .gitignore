@@ -15,6 +15,7 @@ __pycache__/
 build/
 develop-eggs/
 dist/
+dist-artifacts/
 downloads/
 eggs/
 .eggs/
@@ -27,6 +28,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+EasyFileCleanupGUI.spec
 
 # Virtual environments
 venv/
