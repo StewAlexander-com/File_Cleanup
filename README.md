@@ -142,9 +142,19 @@ If you see a security warning when trying to open `Mac File Cleanup.app`, macOS 
 
 **Note**: You only need to do this once. After the first run, you can double-click the app normally without any security prompts.
 
-**Alternative method** (Terminal): If you prefer using Terminal, you can remove the quarantine attribute:
+**Alternative method** (Terminal): If you prefer using Terminal, you can remove the quarantine attribute. First, navigate to the directory where you unzipped the app (e.g., `~/Downloads`), or use the full path:
+
 ```bash
+# Option 1: Navigate to the app's directory first
+cd ~/Downloads  # or wherever you unzipped the app
 xattr -d com.apple.quarantine "Mac File Cleanup.app"
+
+# Option 2: Use the full path (replace ~/Downloads with your actual path)
+xattr -d com.apple.quarantine ~/Downloads/"Mac File Cleanup.app"
+
+# Option 3: Drag the app into Terminal to auto-fill the path
+# Type: xattr -d com.apple.quarantine 
+# Then drag "Mac File Cleanup.app" from Finder into Terminal
 ```
 
 ## Features
