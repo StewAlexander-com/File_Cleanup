@@ -24,10 +24,7 @@ Organizes files by extension into dedicated folders to quickly clean up messy di
 
 ## Table of Contents
 
-- [Easy File Cleanup](#easy-file-cleanup)
-  - [At a Glance](#at-a-glance)
-  - [Table of Contents](#table-of-contents)
-  - [Installation](#installation)
+- [Installation](#installation)
   - [Quick Start](#quick-start)
     - [Web Interface (CLI)](#web-interface-cli)
     - [Terminal Interface (TUI)](#terminal-interface-tui)
