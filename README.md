@@ -59,6 +59,8 @@ pip install Flask
 
 ## Quick Start
 
+Recommended: download the desktop app for your OS (no Python/Flask needed). If you prefer or need the terminal, use the CLI options below.
+
 ### Web Interface (Recommended for beginners)
 Best for most users; runs in your browser with a visual directory tree.
 ```bash
