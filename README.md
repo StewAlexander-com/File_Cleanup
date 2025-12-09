@@ -7,7 +7,7 @@ Organizes files by extension into dedicated folders to quickly clean up messy di
 - **What it does**: Automatically sorts files into folders by their extension (pdf/, jpg/, txt/, etc.)
 - **Who it's for**: Non-technical users (web browser UI), terminal users (full-screen keyboard interface), and developers/power users (automation/cron/CI)
 - **Quick start**: Recommended for most: download and double-click (no Python/Flask needed)  
-  - macOS: [Mac File Cleanup](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Mac-File-Cleanup)  
+  - macOS: [Mac-File-Cleanup.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Mac-File-Cleanup.zip) (unzip, then double-click the `.app`)  
   - Windows: [Win-File-Cleanup.exe](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Win-File-Cleanup.exe)  
   - CLI (web UI):  
     `python3 Easy-File-Cleanup.py --html`  # needs Flask installed  
