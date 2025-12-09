@@ -18,6 +18,7 @@ Organizes files by extension into dedicated folders to quickly clean up messy di
 
 - [Easy File Cleanup](#easy-file-cleanup)
   - [At a Glance](#at-a-glance)
+  - [Table of Contents](#table-of-contents)
   - [Installation](#installation)
   - [Quick Start](#quick-start)
     - [Web Interface (CLI)](#web-interface-cli)
@@ -59,7 +60,8 @@ pip install Flask
 ## Quick Start
 
 Fastest path: download the desktop app for your OS (no Python/Flask needed) and double-click:
-- macOS app: [Mac File Cleanup](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Mac-File-Cleanup)
+- macOS app: [Mac File Cleanup](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Mac-File-Cleanup)  
+  ⚠️ **First run**: Right-click the app and select "Open" if you see a security warning. See [Desktop Apps](#desktop-apps-pyinstaller) section for details.
 - Windows app: [Win-File-Cleanup.exe](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Win-File-Cleanup.exe)
 
 Prefer the CLI instead? Use the commands below.
@@ -98,6 +100,11 @@ Prefer double-click over the command line? Build or download a small desktop lau
   - macOS: [Mac File Cleanup](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Mac-File-Cleanup)
   - Windows: [Win-File-Cleanup.exe](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Win-File-Cleanup.exe)
   - Source zip: [EasyFileCleanup-2.5-source.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/EasyFileCleanup-2.5-source.zip)
+- **First run (macOS)**: If you see a security warning, macOS is blocking the unsigned app. To allow it:
+  1. **Right-click** the app and select **"Open"** (this bypasses Gatekeeper), or
+  2. Go to **System Settings → Privacy & Security** and click **"Open Anyway"** next to the blocked app message, or
+  3. In Terminal: `xattr -d com.apple.quarantine "Mac File Cleanup.app"`
+  After the first run, you can double-click normally.
 - **Run**: Double-click; the web UI opens on `http://127.0.0.1:<port>` and your default browser opens automatically.
 - **Dependencies**: Python and Flask are already bundled in the apps; CLI `--html` still needs `pip install Flask`.
 - **Security**: Localhost-only; the app never exposes your files over the network or internet.
