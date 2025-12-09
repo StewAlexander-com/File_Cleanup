@@ -85,7 +85,7 @@ This opens a full-screen terminal browser. See [TUI Guide](docs/tui.md) for keyb
 ### Command Line (Automation)
 For scripts, cron jobs, and power users who want non-interactive runs.
 ```bash
-python3 Easy-File-Cleanup.py ~/Downloads --yes --quiet  # fully automated
+python3 Easy-File-Cleanup.py ~/Downloads --yes --quiet
 ```
 Fully automated, no prompts. See [Automation Guide](#automation--scripting) below or [example script](examples/automation.sh).
 
