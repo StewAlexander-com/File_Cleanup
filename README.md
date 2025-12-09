@@ -18,7 +18,6 @@ Organizes files by extension into dedicated folders to quickly clean up messy di
 
 - [Easy File Cleanup](#easy-file-cleanup)
   - [At a Glance](#at-a-glance)
-  - [Table of Contents](#table-of-contents)
   - [Installation](#installation)
   - [Quick Start](#quick-start)
     - [Web Interface (CLI)](#web-interface-cli)
@@ -60,7 +59,7 @@ pip install Flask
 ## Quick Start
 
 Fastest path: download the desktop app for your OS (no Python/Flask needed) and double-click:
-- macOS app: [Mac File Cleanup](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Mac%20File%20Cleanup)
+- macOS app: [Mac File Cleanup](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Mac-File-Cleanup)
 - Windows app: [Win-File-Cleanup.exe](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Win-File-Cleanup.exe)
 
 Prefer the CLI instead? Use the commands below.
@@ -217,13 +216,14 @@ python3 test_file_cleanup.py
 ```
 
 All tests run locally without network access — safe to run on any machine. ✅  
-**Test coverage**: 9 core tests + 18 web interface tests. All tests pass ✅ (no network required)
+**Test coverage**: 9 core tests + 18 web interface tests. All tests pass ✅
 
 For detailed testing information, see [TEST_PLAN.md](TEST_PLAN.md).
 
 ## Documentation
 
-**New users**: Start with the Web Interface Guide. Terminal users should check the TUI Guide.  
+**New users**: Start with the Web Interface Guide. Terminal users should check the TUI Guide.
+
 **User Guides** (start here):
 - [Web Interface Guide](docs/web.md) - Detailed web UI documentation, features, and troubleshooting
 - [TUI Guide](docs/tui.md) - Terminal interface navigation, keyboard shortcuts, and usage
@@ -248,7 +248,7 @@ Contributions welcome! See [Contributing Guidelines](CONTRIBUTING.md) for detail
 
 ## License
 
-MIT License — free to use and modify. See LICENSE for full terms.
+MIT License — free to use and modify. See [LICENSE](LICENSE) for full terms.
 
 ## Contact
 
