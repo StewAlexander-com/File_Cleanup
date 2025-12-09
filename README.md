@@ -1,16 +1,18 @@
 # Easy File Cleanup
 
-Organizes files by extension into dedicated folders to quickly clean up messy directories (like Downloads) on any OS. Files are only moved inside the folder you choose, and an `organization_log.txt` records every change.
+Organizes files by extension into dedicated folders to quickly clean up messy directories (like Downloads) on any OS. **Files are moved only within your chosen directory, and an `organization_log.txt` tracks every change so you can review what happened.**
 
 ## At a Glance
 
 - **What it does**: Automatically sorts files into folders by their extension (pdf/, jpg/, txt/, etc.)
-- **Who it's for**: Non-technical users (web UI), terminal users (Terminal/TUI full-screen text UI), developers and power users (automation/cron/CI)
+- **Who it's for**: Non-technical users (web browser UI), terminal users (full-screen keyboard interface), and developers/power users (automation/cron/CI)
 - **Quick start**: Recommended for most: download and double-click (no Python/Flask needed)  
   - macOS: [Mac File Cleanup](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Mac%20File%20Cleanup)  
   - Windows: [Win-File-Cleanup.exe](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Win-File-Cleanup.exe)  
-  - CLI (web UI): `python3 Easy-File-Cleanup.py --html`  # needs Flask installed  
-  - CLI (organize a folder): `python3 Easy-File-Cleanup.py ~/Downloads`
+  - CLI (web UI):  
+    `python3 Easy-File-Cleanup.py --html`  # needs Flask installed  
+  - CLI (organize a folder):  
+    `python3 Easy-File-Cleanup.py ~/Downloads`
 
 ## Table of Contents
 
@@ -90,7 +92,7 @@ Prefer double-click over the command line? Build or download a small desktop lau
   - Source zip: [EasyFileCleanup-2.5-source.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/EasyFileCleanup-2.5-source.zip)
 - **Run**: Double-click; the web UI opens on `http://127.0.0.1:<port>` and your default browser opens automatically.
 - **Dependencies**: Python and Flask are already bundled in the apps; CLI `--html` still needs `pip install Flask`.
-- **Security**: Localhost-only; the app never exposes your files over the network.
+- **Security**: Localhost-only; the app never exposes your files over the network or internet.
 - **Build yourself (optional)**:
   - Requirements: Python 3.x, Flask (`pip install Flask`), PyInstaller (`pip install pyinstaller`)
   - macOS: `./scripts/build_gui_mac.sh`
@@ -165,9 +167,9 @@ python3 Easy-File-Cleanup.py
 |------|-------------|
 | `--html` | Launch web interface (requires Flask) |
 | `--tui` | Launch terminal interface |
-| `--yes` / `--non-interactive` | Auto-create copies for duplicates (non-interactive; good for scripts) |
-| `--overwrite` | Auto-overwrite duplicates (use only if you’re sure) |
-| `--quiet` | Minimal output (for automation) |
+| `--yes` / `--non-interactive` | Auto-create copies for duplicates (recommended for scripts) |
+| `--overwrite` | Auto-overwrite duplicates (⚠️ use only if you're certain) |
+| `--quiet` | Minimal output (for automation and cron jobs) |
 | `--help` | Show full help |
 
 ## Automation & Scripting
@@ -179,12 +181,12 @@ Fully automatable for cron jobs, CI/CD, and scripts.
 python3 Easy-File-Cleanup.py ~/Downloads --yes --quiet
 ```
 
-**Cron example (Linux/macOS, runs daily at 2 AM)**:
+**Cron example** (Linux/macOS only - runs daily at 2 AM):
 ```bash
 0 2 * * * /usr/bin/python3 /path/to/Easy-File-Cleanup.py ~/Downloads --yes --quiet
 ```
 
-**Exit codes** (CI/cron friendly):
+**Exit codes** (suitable for CI/CD pipelines and monitoring tools):
 - `0`: Success
 - `1`: Error (invalid directory, organization failed)
 - `2`: Invalid arguments
@@ -205,12 +207,14 @@ Run the test suite:
 python3 test_file_cleanup.py
 ```
 
+All tests run locally without network access — safe to run on any machine. ✅  
 **Test coverage**: 9 core tests + 18 web interface tests. All tests pass ✅ (no network required)
 
 For detailed testing information, see [TEST_PLAN.md](TEST_PLAN.md).
 
 ## Documentation
 
+**New users**: Start with the Web Interface Guide. Terminal users should check the TUI Guide.  
 **User Guides** (start here):
 - [Web Interface Guide](docs/web.md) - Detailed web UI documentation, features, and troubleshooting
 - [TUI Guide](docs/tui.md) - Terminal interface navigation, keyboard shortcuts, and usage
@@ -235,7 +239,7 @@ Contributions welcome! See [Contributing Guidelines](CONTRIBUTING.md) for detail
 
 ## License
 
-Open source — see repository for licensing details.
+MIT License — free to use and modify. See LICENSE for full terms.
 
 ## Contact
 
