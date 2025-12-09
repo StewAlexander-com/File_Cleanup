@@ -149,12 +149,10 @@ cd ~/Downloads  # or wherever you unzipped the app
 xattr -d com.apple.quarantine "Mac File Cleanup.app"
 
 # Option 2: Use the full path (replace ~/Downloads with your actual path)
-xattr -d com.apple.quarantine ~/Downloads/"Mac File Cleanup.app"
-
-# Option 3: Drag the app into Terminal to auto-fill the path
-# Type: xattr -d com.apple.quarantine 
-# Then drag "Mac File Cleanup.app" from Finder into Terminal
+xattr -d com.apple.quarantine "~/Downloads/Mac File Cleanup.app"
 ```
+
+**Option 3** (drag and drop): Type `xattr -d com.apple.quarantine ` (with a space at the end), then drag `Mac File Cleanup.app` from Finder into Terminal, and press Enter.
 
 ## Features
 
@@ -244,8 +242,9 @@ Fully automatable for cron jobs, CI/CD, and scripts.
 python3 Easy-File-Cleanup.py ~/Downloads --yes --quiet
 ```
 
-**Cron example** (Linux/macOS only - runs daily at 2 AM):
+**Cron example** (Linux/macOS only):
 ```bash
+# Runs daily at 2 AM
 0 2 * * * /usr/bin/python3 /path/to/Easy-File-Cleanup.py ~/Downloads --yes --quiet
 ```
 
