@@ -7,7 +7,7 @@ Organizes files by extension into dedicated folders to quickly clean up messy di
 - **What it does**: Automatically sorts files into folders by their extension (pdf/, jpg/, txt/, etc.)
 - **Who it's for**: Non-technical users (web browser UI), terminal users (full-screen keyboard interface), and developers/power users (automation/cron/CI)
 - **Quick start**: Recommended for most: download and double-click (no Python/Flask needed)  
-  - macOS: [Mac File Cleanup](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Mac%20File%20Cleanup)  
+  - macOS: [Mac File Cleanup](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Mac-File-Cleanup)  
   - Windows: [Win-File-Cleanup.exe](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Win-File-Cleanup.exe)  
   - CLI (web UI):  
     `python3 Easy-File-Cleanup.py --html`  # needs Flask installed  
@@ -96,7 +96,7 @@ Fully automated, no prompts. See [Automation Guide](#automation--scripting) belo
 Prefer double-click over the command line? Build or download a small desktop launcher for the web UI. The CLI/TUI stay exactly the same.
 
 - **Download ready-to-run apps (no Python needed)**:
-  - macOS: [Mac File Cleanup](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Mac%20File%20Cleanup)
+  - macOS: [Mac File Cleanup](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Mac-File-Cleanup)
   - Windows: [Win-File-Cleanup.exe](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Win-File-Cleanup.exe)
   - Source zip: [EasyFileCleanup-2.5-source.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/EasyFileCleanup-2.5-source.zip)
 - **Run**: Double-click; the web UI opens on `http://127.0.0.1:<port>` and your default browser opens automatically.
