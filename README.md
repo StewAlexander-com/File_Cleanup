@@ -10,26 +10,30 @@ Organizes files by extension into dedicated folders. Perfect for cleaning up clu
 
 ## Table of Contents
 
-- [Installation](#installation)
-- [Quick Start](#quick-start)
-  - [Web Interface](#web-interface-recommended-for-beginners)
-  - [Terminal Interface (TUI)](#terminal-interface-tui)
-  - [Command Line (Automation)](#command-line-automation)
-- [Features](#features)
-  - [Core Functionality](#core-functionality)
-  - [Interface Options](#interface-options)
-  - [Automation](#automation)
-- [How It Works](#how-it-works)
-- [Usage](#usage)
-  - [Basic Command Line](#basic-command-line)
-  - [Interactive Mode](#interactive-mode)
-  - [Available Flags](#available-flags)
-- [Automation & Scripting](#automation--scripting)
-- [Testing](#testing)
-- [Documentation](#documentation)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
+- [Easy File Cleanup](#easy-file-cleanup)
+  - [At a Glance](#at-a-glance)
+  - [Table of Contents](#table-of-contents)
+  - [Installation](#installation)
+  - [Quick Start](#quick-start)
+    - [Web Interface (Recommended for beginners)](#web-interface-recommended-for-beginners)
+    - [Terminal Interface (TUI)](#terminal-interface-tui)
+    - [Command Line (Automation)](#command-line-automation)
+  - [Desktop Apps (PyInstaller)](#desktop-apps-pyinstaller)
+  - [Features](#features)
+    - [Core Functionality](#core-functionality)
+    - [Interface Options](#interface-options)
+    - [Automation](#automation)
+  - [How It Works](#how-it-works)
+  - [Usage](#usage)
+    - [Basic Command Line](#basic-command-line)
+    - [Interactive Mode](#interactive-mode)
+    - [Available Flags](#available-flags)
+  - [Automation \& Scripting](#automation--scripting)
+  - [Testing](#testing)
+  - [Documentation](#documentation)
+  - [Contributing](#contributing)
+  - [License](#license)
+  - [Contact](#contact)
 
 ## Installation
 
@@ -65,6 +69,18 @@ Full-screen terminal browser. See [TUI Guide](docs/tui.md) for keyboard shortcut
 python3 Easy-File-Cleanup.py ~/Downloads --yes --quiet
 ```
 Fully automated, no prompts. See [Automation Guide](#automation--scripting) below or [example script](examples/automation.sh).
+
+## Desktop Apps (PyInstaller)
+
+Prefer double-click over the command line? Build a small desktop launcher for the web UI. The CLI/TUI stay exactly the same.
+
+- **Requirements**: Python 3.x, Flask (`pip install Flask`), PyInstaller (`pip install pyinstaller`)
+- **macOS**: `./scripts/build_gui_mac.sh`
+- **Windows (via GitHub Actions)**: Trigger the `Build Windows GUI` workflow (`gh workflow run build-windows.yml`), then download the `EasyFileCleanupGUI-windows` artifact
+- **Windows (native)**: `powershell -ExecutionPolicy Bypass -File scripts/build_gui_windows.ps1`
+- **Output**: `dist/EasyFileCleanupGUI` (macOS) or `dist/EasyFileCleanupGUI.exe` (Windows)
+- **Usage**: Double-click the built app; it launches the HTML interface on `http://127.0.0.1:<port>` with auto-browser open
+- **Security**: Still localhost-only; no external access
 
 ## Features
 

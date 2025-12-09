@@ -55,7 +55,24 @@ from file_cleanup import (
     find_directory_by_partial_path
 )
 
-app = Flask(__name__)
+
+def get_base_dir() -> Path:
+    """
+    Resolve the base directory for locating bundled assets (templates).
+
+    When packaged with PyInstaller, files are extracted to a temporary
+    directory available via sys._MEIPASS. In normal execution, this falls
+    back to the directory containing this file.
+    """
+    if hasattr(sys, '_MEIPASS'):
+        return Path(sys._MEIPASS)  # PyInstaller extraction dir
+    return Path(__file__).parent
+
+
+# Template directory works for both source and PyInstaller bundles
+BASE_DIR = get_base_dir()
+TEMPLATE_DIR = BASE_DIR / "templates"
+app = Flask(__name__, template_folder=str(TEMPLATE_DIR))
 app.config['SECRET_KEY'] = os.urandom(24)
 
 # Add headers to prevent browser security issues
