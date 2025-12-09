@@ -6,7 +6,10 @@ Organizes files by extension into dedicated folders. Perfect for cleaning up clu
 
 - **What it does**: Automatically sorts files into folders by their extension (pdf/, jpg/, txt/, etc.)
 - **Who it's for**: Non-technical users (web UI), terminal users (TUI), and developers/devops (automation)
-- **Quick start**: `python3 Easy-File-Cleanup.py --html` (web) or `python3 Easy-File-Cleanup.py ~/Downloads` (CLI)
+- **Quick start**: Download the app and double-click  
+  - macOS: [EasyFileCleanupGUI-mac](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.0/EasyFileCleanupGUI-mac)  
+  - Windows: [EasyFileCleanupGUI-windows.exe](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.0/EasyFileCleanupGUI-windows.exe)  
+  - Or CLI: `python3 Easy-File-Cleanup.py --html` (web) / `python3 Easy-File-Cleanup.py ~/Downloads` (CLI)
 
 ## Table of Contents
 
