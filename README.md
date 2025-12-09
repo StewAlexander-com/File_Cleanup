@@ -7,9 +7,9 @@ Organizes files by extension into dedicated folders to quickly clean up messy di
 - **What it does**: Automatically sorts files into folders by their extension (pdf/, jpg/, txt/, etc.)
 - **Who it's for**: Non-technical users (web browser UI), terminal users (full-screen keyboard interface), and developers/power users (automation/cron/CI)
 - **Quick start**: Recommended for most: download and double-click (no Python/Flask needed)  
-  - macOS: [Mac-File-Cleanup.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Mac-File-Cleanup.zip) (unzip, then double-click the `.app`)  
+  - macOS: [Mac-File-Cleanup.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v3.0/Mac-File-Cleanup.zip) (unzip, then double-click the `.app`)  
     ⚠️ **First run**: If you see a security warning, see [First Run Instructions (macOS)](#first-run-instructions-macos) below.
-  - Windows: [Win-File-Cleanup.exe](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Win-File-Cleanup.exe)  
+  - Windows: [Win-File-Cleanup.exe](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v3.0/Win-File-Cleanup.exe)  
   - CLI (web UI):  
     `python3 Easy-File-Cleanup.py --html`  # needs Flask installed  
   - CLI (organize a folder):  
@@ -62,9 +62,9 @@ pip install Flask
 ## Quick Start
 
 Fastest path: download the desktop app for your OS (no Python/Flask needed):
-- macOS: [Mac-File-Cleanup.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Mac-File-Cleanup.zip) — unzip, then double-click `Mac File Cleanup.app`  
+- macOS: [Mac-File-Cleanup.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v3.0/Mac-File-Cleanup.zip) — unzip, then double-click `Mac File Cleanup.app`  
   ⚠️ **First run**: If you see a security warning, see [First Run Instructions (macOS)](#first-run-instructions-macos) below.
-- Windows: [Win-File-Cleanup.exe](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Win-File-Cleanup.exe) — double-click to run
+- Windows: [Win-File-Cleanup.exe](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v3.0/Win-File-Cleanup.exe) — double-click to run
 
 Prefer the CLI instead? Use the commands below.
 
@@ -99,9 +99,9 @@ Fully automated, no prompts. See [Automation Guide](#automation--scripting) belo
 Prefer double-click over the command line? Build or download a small desktop launcher for the web UI. The CLI/TUI stay exactly the same.
 
 - **Download ready-to-run apps (no Python needed)**:
-  - macOS: [Mac-File-Cleanup.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Mac-File-Cleanup.zip) (contains `Mac File Cleanup.app` — unzip first, then double-click the `.app`)
-  - Windows: [Win-File-Cleanup.exe](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/Win-File-Cleanup.exe)
-  - Source zip: [EasyFileCleanup-2.5-source.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v2.5/EasyFileCleanup-2.5-source.zip)
+  - macOS: [Mac-File-Cleanup.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v3.0/Mac-File-Cleanup.zip) (contains `Mac File Cleanup.app` — unzip first, then double-click the `.app`)
+  - Windows: [Win-File-Cleanup.exe](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v3.0/Win-File-Cleanup.exe)
+  - Source zip: [EasyFileCleanup-3.0-source.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v3.0/EasyFileCleanup-3.0-source.zip)
 - **First run (macOS)**: See [First Run Instructions (macOS)](#first-run-instructions-macos) below for step-by-step instructions.
 - **Run**: Double-click; the web UI opens on `http://127.0.0.1:<port>` and your default browser opens automatically.
 - **Dependencies**: Python and Flask are already bundled in the apps; CLI `--html` still needs `pip install Flask`.
@@ -308,4 +308,4 @@ MIT License — free to use and modify. See [LICENSE](LICENSE) for full terms.
 
 ---
 
-**Version**: 2.5 | **Last Updated**: December 2025
+**Version**: 3.0 | **Last Updated**: December 2025
