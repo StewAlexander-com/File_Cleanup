@@ -55,7 +55,7 @@ cd File_Cleanup
 # Make executable (macOS/Linux only - Windows users skip this)
 chmod +x Easy-File-Cleanup.py
 
-# Flask (only needed for CLI --html; desktop apps already bundle it)
+# Only needed for CLI --html; desktop apps already bundle Flask
 pip install Flask
 ```
 
@@ -72,8 +72,6 @@ Prefer the CLI instead? Use the commands below.
 Runs in your browser with a visual directory tree. Requires Flask to be installed:
 ```bash
 pip install Flask
-```
-```bash
 python3 Easy-File-Cleanup.py --html
 ```
 Opens in your browser automatically. See [Web Interface Guide](docs/web.md) for details, features, and troubleshooting.
@@ -81,9 +79,10 @@ Opens in your browser automatically. See [Web Interface Guide](docs/web.md) for 
 ### Terminal Interface (TUI)
 For terminal users who like keyboard navigation and a full-screen text UI.
 ```bash
+# Launch the TUI and start in your Downloads folder
 python3 Easy-File-Cleanup.py --tui ~/Downloads
 ```
-Full-screen terminal browser. See [TUI Guide](docs/tui.md) for keyboard shortcuts and navigation.
+This opens a full-screen terminal browser. See [TUI Guide](docs/tui.md) for keyboard shortcuts and navigation.
 
 ### Command Line (Automation)
 For scripts, cron jobs, and power users who want non-interactive runs.
