@@ -122,6 +122,8 @@ If you see a security warning when trying to open `Mac File Cleanup.app`, macOS 
 
 **Quick summary**: Download and unzip the app, try to open it (you'll see a warning), then go to **System Settings → Privacy & Security** and click **"Open Anyway"** next to the blocked app message. Confirm in the popup, then you can run the app normally.
 
+\* **Note for Intel Mac users**: If the app won't open even after following the security steps, you may have an older build that only supports Apple Silicon. See the [macOS First Run Guide](docs/macos-first-run.md) for troubleshooting and build instructions.
+
 For detailed step-by-step instructions with screenshots and alternative methods, see the [macOS First Run Guide](docs/macos-first-run.md).
 
 ## Features
