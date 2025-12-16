@@ -19,9 +19,12 @@ rm -rf build "dist/Mac File Cleanup" "dist/Mac File Cleanup.app" "Mac File Clean
 # Build the .app bundle (without --onefile for proper macOS app structure)
 # Explicitly include Flask and its dependencies, plus our own modules
 # Add current directory to path so PyInstaller can find our modules
+# NOTE: --target-arch universal2 produces a universal (arm64 + x86_64) app,
+#       assuming you're using a PyInstaller + Python build that supports it.
 python3 -m PyInstaller \
   --windowed \
   --name "Mac File Cleanup" \
+  --target-arch universal2 \
   --add-data "templates:templates" \
   --add-data "file_cleanup.py:." \
   --add-data "web_interface.py:." \

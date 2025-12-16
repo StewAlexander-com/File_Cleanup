@@ -24,7 +24,10 @@ Organizes files by extension into dedicated folders to quickly clean up messy di
 
 ## Table of Contents
 
-- [Installation](#installation)
+- [Easy File Cleanup](#easy-file-cleanup)
+  - [At a Glance](#at-a-glance)
+  - [Table of Contents](#table-of-contents)
+  - [Installation](#installation)
   - [Quick Start](#quick-start)
     - [Web Interface (CLI)](#web-interface-cli)
     - [Terminal Interface (TUI)](#terminal-interface-tui)
@@ -108,8 +111,8 @@ Prefer double-click over the command line? Build or download a small desktop lau
 - **Dependencies**: Python and Flask are already bundled in the apps; CLI `--html` still needs `pip install Flask`.
 - **Security**: Localhost-only; the app never exposes your files over the network or internet.
 - **Build yourself (optional)**:
-  - Requirements: Python 3.x, Flask (`pip install Flask`), PyInstaller (`pip install pyinstaller`)
-  - macOS: `./scripts/build_gui_mac.sh`
+  - Requirements: Python 3.x, Flask (`pip install Flask`), PyInstaller (`pip install pyinstaller`) with support for `--target-arch universal2`
+  - macOS: `./scripts/build_gui_mac.sh` (builds a **universal** app that runs on both Intel and Apple Silicon Macs)
   - Windows (via GitHub Actions): `gh workflow run build-windows.yml` then download the artifact
   - Windows (native): `powershell -ExecutionPolicy Bypass -File scripts/build_gui_windows.ps1`
 
