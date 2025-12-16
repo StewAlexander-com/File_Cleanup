@@ -2,6 +2,8 @@
 
 If you see a security warning when trying to open `Mac File Cleanup.app`, macOS is blocking the unsigned app. Follow these steps to allow it.
 
+**Note for Intel Mac users**: If the app won't open even after following the security steps below, you may have an older build that only supports Apple Silicon (M1/M2). The current build script produces a universal app that works on both Intel and Apple Silicon Macs. If you're on an Intel Mac and the app doesn't work, see the [build instructions in the README](../README.md#desktop-apps-pyinstaller) to build the app yourself using `./scripts/build_gui_mac.sh`.
+
 ## Method 1: System Settings (Recommended)
 
 1. **Download and unzip** `Mac-File-Cleanup.zip` to get `Mac File Cleanup.app`
@@ -44,6 +46,20 @@ xattr -d com.apple.quarantine "~/Downloads/Mac File Cleanup.app"
 ```
 
 **Option 3** (drag and drop): Type `xattr -d com.apple.quarantine ` (with a space at the end), then drag `Mac File Cleanup.app` from Finder into Terminal, and press Enter.
+
+## Troubleshooting
+
+### App won't open on Intel Mac
+
+If you're using an **Intel Mac** and the app won't open even after following the security steps above, you may have an older build that only supports Apple Silicon (M1/M2). 
+
+**Solution**: Build the app yourself to get a universal version that works on both Intel and Apple Silicon:
+
+1. See the [build instructions in the README](../README.md#desktop-apps-pyinstaller)
+2. Run `./scripts/build_gui_mac.sh` to build a universal app
+3. The built app will be in `dist/Mac File Cleanup.app`
+
+The current build script produces a universal (Intel + Apple Silicon) app, so if you build it yourself, it will work on your Intel Mac.
 
 ## Why does this happen?
 
