@@ -19,7 +19,7 @@ Organizes files by extension into dedicated folders to quickly clean up messy di
 **macOS**: Download [Mac-File-Cleanup.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v4.0/Mac-File-Cleanup.zip), unzip, and double-click `Mac File Cleanup.app`
 - ⚠️ **First run**: If you see a security warning, see [First Run Instructions (macOS)](#first-run-instructions-macos) below
 
-**Windows**: Pre-built executables are not available. Build from source (see [Building Windows Releases](#building-windows-releases)) or use Python directly:
+**Windows**: Unfortunately, we're unable to provide pre-built Windows executables at this time due to false positive security warnings from unsigned binaries. You can either build from source (see [Building Windows Releases](#building-windows-releases)) for a signed executable, or simply run the Python script directly:
 ```powershell
 python Easy-File-Cleanup.py --html
 ```
@@ -62,7 +62,7 @@ Standalone apps with Python and Flask bundled — no installation required. Doub
 ### Download
 
 - **macOS**: [Mac-File-Cleanup.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v4.0/Mac-File-Cleanup.zip) (Universal app for Intel + Apple Silicon)
-- **Windows**: Not available (build from source — see below)
+- **Windows**: Not available at this time (due to unsigned binary warnings — see [Building Windows Releases](#building-windows-releases) to build from source)
 - **Source**: [EasyFileCleanup-4.0-source.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v4.0/EasyFileCleanup-4.0-source.zip)
 
 ### Building Windows Releases
