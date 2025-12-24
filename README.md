@@ -22,7 +22,7 @@ Organizes files by extension into dedicated folders to quickly clean up messy di
 **Windows**: Unfortunately, we're unable to provide pre-built Windows executables at this time due to false positive security warnings from unsigned binaries. You can either build from source (see [Building Windows Releases](#building-windows-releases)) for a signed executable, or run the Python script directly.
 
 On Windows with Python installed, you can launch the web interface directly:
-```powershell
+```bash
 pip install Flask
 python Easy-File-Cleanup.py --html
 ```
@@ -62,7 +62,7 @@ pip install Flask  # Only needed for --html flag
 
 ### Windows
 
-```powershell
+```bash
 git clone https://github.com/StewAlexander-com/File_Cleanup.git
 cd File_Cleanup
 pip install Flask  # Only needed for --html flag
@@ -106,7 +106,7 @@ Standalone apps with Python and Flask bundled — no installation required. Doub
    - See [Microsoft's Code Signing Guide](https://learn.microsoft.com/en-us/windows/win32/win_cert/sign) for details
 
 4. **Alternative**: Use Python directly to avoid all security issues (requires Flask installed — see [Option 2: Command Line](#option-2-command-line) above for details):
-   ```powershell
+   ```bash
    python Easy-File-Cleanup.py --html
    ```
 
