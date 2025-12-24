@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 
 **Navigation**: [← Back to README](README.md) | [Web Interface](docs/web.md) | [TUI Guide](docs/tui.md) | [Test Plan](TEST_PLAN.md)
 
+## [4.0] - December 2025
+
+### Security
+- Removed pre-built Windows `.exe` files from releases due to security violations detected by Windows 11 and Sentinel One
+- Added comprehensive Windows build instructions with code signing guidance to prevent security warnings
+- Updated documentation to emphasize building from source or using CLI/TUI directly on Windows
+
+### Changed
+- Updated version to 4.0 (major version bump due to removal of Windows binary distribution)
+- All download links updated to v4.0
+- Windows users must now build from source or use Python directly (see README for instructions)
+
+### Documentation
+- Added "Building Windows Releases" section with code signing instructions
+- Added security notice at top of README explaining Windows .exe removal
+- Updated all version references to 4.0
+
 ## [2.0] - December 2025
 
 ### Added

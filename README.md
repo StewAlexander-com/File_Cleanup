@@ -1,5 +1,7 @@
 # Easy File Cleanup
 
+> **⚠️ Important Security Notice (Version 4.0)**: The pre-built Windows `.exe` file has been removed due to security violations detected by Windows 11 and Sentinel One. Windows users should build the executable from source (see [Building Windows Releases](#building-windows-releases) below) or use the CLI/TUI interfaces directly with Python.
+
 Organizes files by extension into dedicated folders to quickly clean up messy directories (like Downloads) on any OS. **Files are moved only within your chosen directory, and an `organization_log.txt` tracks every change so you can review what happened.**
 
 **Why this tool?**
@@ -14,9 +16,9 @@ Organizes files by extension into dedicated folders to quickly clean up messy di
 - **What it does**: Automatically sorts files into folders by their extension (pdf/, jpg/, txt/, etc.)
 - **Who it's for**: Non-technical users (web browser UI), terminal users (full-screen keyboard interface), and developers/power users (automation/cron/CI)
 - **Quick start**: Recommended for most: download and double-click (no Python/Flask needed)  
-  - macOS: [Mac-File-Cleanup.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v3.5/Mac-File-Cleanup.zip) (unzip, then double-click the `.app`)  
+  - macOS: [Mac-File-Cleanup.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v4.0/Mac-File-Cleanup.zip) (unzip, then double-click the `.app`)  
     ⚠️ **First run**: If you see a security warning, see [First Run Instructions (macOS)](#first-run-instructions-macos) below.
-  - Windows: [Win-File-Cleanup.exe](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v3.5/Win-File-Cleanup.exe)  
+  - Windows: Build from source (see [Building Windows Releases](#building-windows-releases)) or use CLI/TUI directly
   - CLI (web UI):  
     `python3 Easy-File-Cleanup.py --html`  # needs Flask installed  
   - CLI (organize a folder):  
@@ -67,9 +69,9 @@ pip install Flask
 ## Quick Start
 
 Fastest path: download the desktop app for your OS (no Python/Flask needed):
-- macOS: [Mac-File-Cleanup.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v3.5/Mac-File-Cleanup.zip) — unzip, then double-click `Mac File Cleanup.app`  
+- macOS: [Mac-File-Cleanup.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v4.0/Mac-File-Cleanup.zip) — unzip, then double-click `Mac File Cleanup.app`  
   ⚠️ **First run**: If you see a security warning, see [First Run Instructions (macOS)](#first-run-instructions-macos) below.
-- Windows: [Win-File-Cleanup.exe](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v3.5/Win-File-Cleanup.exe) — double-click to run
+- Windows: See [Building Windows Releases](#building-windows-releases) below to build from source, or use the CLI/TUI interfaces directly
 
 Prefer the CLI instead? Use the commands below.
 
@@ -103,9 +105,9 @@ Fully automated, no prompts. See [Automation Guide](#automation--scripting) belo
 Prefer double-click over the command line? Build or download a small desktop launcher for the web UI. The CLI/TUI stay exactly the same.
 
 - **Download ready-to-run apps (no Python needed)**:
-  - macOS: [Mac-File-Cleanup.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v3.5/Mac-File-Cleanup.zip) (contains `Mac File Cleanup.app` — unzip first, then double-click the `.app`) — **Universal app (Intel + Apple Silicon)**
-  - Windows: [Win-File-Cleanup.exe](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v3.5/Win-File-Cleanup.exe)
-  - Source zip: [EasyFileCleanup-3.5-source.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v3.5/EasyFileCleanup-3.5-source.zip)
+  - macOS: [Mac-File-Cleanup.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v4.0/Mac-File-Cleanup.zip) (contains `Mac File Cleanup.app` — unzip first, then double-click the `.app`) — **Universal app (Intel + Apple Silicon)**
+  - Windows: Pre-built `.exe` files are not available due to security restrictions. Please build from source (see [Building Windows Releases](#building-windows-releases) below) or use the CLI/TUI interfaces directly.
+  - Source zip: [EasyFileCleanup-4.0-source.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v4.0/EasyFileCleanup-4.0-source.zip)
 - **First run (macOS)**: See [First Run Instructions (macOS)](#first-run-instructions-macos) below for step-by-step instructions.
 - **Run**: Double-click; the web UI opens on `http://127.0.0.1:<port>` and your default browser opens automatically.
 - **Dependencies**: Python and Flask are already bundled in the apps; CLI `--html` still needs `pip install Flask`.
@@ -113,8 +115,52 @@ Prefer double-click over the command line? Build or download a small desktop lau
 - **Build yourself (optional)**:
   - Requirements: Python 3.x, Flask (`pip install Flask`), PyInstaller (`pip install pyinstaller`) with support for `--target-arch universal2`
   - macOS: `./scripts/build_gui_mac.sh` (builds a **universal** app that runs on both Intel and Apple Silicon Macs)
-  - Windows (via GitHub Actions): `gh workflow run build-windows.yml` then download the artifact
-  - Windows (native): `powershell -ExecutionPolicy Bypass -File scripts/build_gui_windows.ps1`
+  - Windows: See [Building Windows Releases](#building-windows-releases) below for detailed instructions
+
+### Building Windows Releases
+
+**⚠️ Important**: Due to Windows 11 security restrictions and Sentinel One false positives, pre-built Windows executables are not provided. To create a Windows executable that avoids security violations, follow these steps:
+
+**Option 1: Build Locally (Recommended)**
+
+1. **Install dependencies**:
+   ```powershell
+   pip install -r requirements.txt
+   pip install pyinstaller
+   ```
+
+2. **Build the executable**:
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File scripts/build_gui_windows.ps1
+   ```
+
+3. **Code Signing (Strongly Recommended)**: To prevent Windows Defender and security software from flagging the executable:
+   - Obtain a code signing certificate (Extended Validation recommended)
+   - Sign the executable after building:
+     ```powershell
+     signtool sign /f "path\to\certificate.pfx" /p "password" /t "http://timestamp.digicert.com" /fd sha256 "dist\Win-File-Cleanup.exe"
+     ```
+   - See [Microsoft's Code Signing Guide](https://learn.microsoft.com/en-us/windows/win32/win_cert/sign) for detailed instructions
+
+4. **Alternative: Use Python directly** (avoids all security issues):
+   ```powershell
+   python Easy-File-Cleanup.py --html
+   ```
+   Or use the TUI:
+   ```powershell
+   python Easy-File-Cleanup.py --tui
+   ```
+
+**Option 2: GitHub Actions Build**
+
+1. Run the workflow: `gh workflow run build-windows.yml`
+2. Download the artifact from the Actions tab
+3. **Note**: You will still need to code sign the artifact to avoid security warnings
+
+**Additional Resources**:
+- [PyInstaller Windows Guide](https://pyinstaller.org/en/stable/when-things-go-wrong.html#code-signing-on-windows)
+- [Microsoft Code Signing Documentation](https://learn.microsoft.com/en-us/windows/win32/win_cert/sign)
+- [Windows Defender False Positives](https://learn.microsoft.com/en-us/microsoft-365/security/intelligence/false-positives-negatives)
 
 ### First Run Instructions (macOS)
 
@@ -285,4 +331,4 @@ MIT License — free to use and modify. See [LICENSE](LICENSE) for full terms.
 
 ---
 
-**Version**: 3.5 | **Last Updated**: December 2025
+**Version**: 4.0 | **Last Updated**: December 2025
