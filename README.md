@@ -1,6 +1,6 @@
 # Easy File Cleanup
 
-> **⚠️ Important Security Notice (Version 4.0)**: The pre-built Windows `.exe` file has been removed due to security violations detected by Windows 11 and Sentinel One. Windows users should build the executable from source (see [Building Windows Releases](#building-windows-releases)) or use the CLI/TUI interfaces directly with Python.
+> **⚠️ Important Security Notice (Version 4.0)**: The pre-built Windows `.exe` file has been removed due to false positive security warnings from Windows 11 and Sentinel One. These warnings occur because the executable is unsigned (not code-signed with a certificate), not because the software is malicious. Unsigned executables from unknown publishers often trigger security alerts, but the code itself is open-source and safe. Windows users should build the executable from source (see [Building Windows Releases](#building-windows-releases)) or use the CLI/TUI interfaces directly with Python to avoid these warnings entirely.
 
 Organizes files by extension into dedicated folders to quickly clean up messy directories (like Downloads) on any OS. **Files are moved only within your chosen directory, and an `organization_log.txt` tracks every change so you can review what happened.**
 
