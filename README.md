@@ -174,7 +174,7 @@ python3 Easy-File-Cleanup.py ~/Downloads --yes --quiet
 7. Creates/updates `organization_log.txt`
 
 **Example output**:
-```
+```text
 Downloads/
 ├── pdf/
 │   ├── document1.pdf
