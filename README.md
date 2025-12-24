@@ -19,7 +19,9 @@ Organizes files by extension into dedicated folders to quickly clean up messy di
 **macOS**: Download [Mac-File-Cleanup.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v4.0/Mac-File-Cleanup.zip), unzip, and double-click `Mac File Cleanup.app`
 - ⚠️ **First run**: If you see a security warning, see [First Run Instructions (macOS)](#first-run-instructions-macos) below
 
-**Windows**: Unfortunately, we're unable to provide pre-built Windows executables at this time due to false positive security warnings from unsigned binaries. You can either build from source (see [Building Windows Releases](#building-windows-releases)) for a signed executable, or simply run the Python script directly (requires Flask installed — see [Installation](#installation) below):
+**Windows**: Unfortunately, we're unable to provide pre-built Windows executables at this time due to false positive security warnings from unsigned binaries. You can either build from source (see [Building Windows Releases](#building-windows-releases)) for a signed executable, or run the Python script directly.
+
+On Windows with Python installed, you can launch the web interface directly:
 ```powershell
 pip install Flask
 python Easy-File-Cleanup.py --html
