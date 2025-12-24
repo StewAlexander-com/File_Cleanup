@@ -90,7 +90,7 @@ Standalone apps with Python and Flask bundled — no installation required. Doub
      ```
    - See [Microsoft's Code Signing Guide](https://learn.microsoft.com/en-us/windows/win32/win_cert/sign) for details
 
-4. **Alternative**: Use Python directly to avoid all security issues:
+4. **Alternative**: Use Python directly to avoid all security issues (requires Flask installed — see [Option 2: Command Line](#option-2-command-line) above for details):
    ```powershell
    python Easy-File-Cleanup.py --html
    ```
