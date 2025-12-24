@@ -19,8 +19,9 @@ Organizes files by extension into dedicated folders to quickly clean up messy di
 **macOS**: Download [Mac-File-Cleanup.zip](https://github.com/StewAlexander-com/File_Cleanup/releases/download/v4.0/Mac-File-Cleanup.zip), unzip, and double-click `Mac File Cleanup.app`
 - ⚠️ **First run**: If you see a security warning, see [First Run Instructions (macOS)](#first-run-instructions-macos) below
 
-**Windows**: Unfortunately, we're unable to provide pre-built Windows executables at this time due to false positive security warnings from unsigned binaries. You can either build from source (see [Building Windows Releases](#building-windows-releases)) for a signed executable, or simply run the Python script directly:
+**Windows**: Unfortunately, we're unable to provide pre-built Windows executables at this time due to false positive security warnings from unsigned binaries. You can either build from source (see [Building Windows Releases](#building-windows-releases)) for a signed executable, or simply run the Python script directly (requires Flask installed — see [Installation](#installation) below):
 ```powershell
+pip install Flask
 python Easy-File-Cleanup.py --html
 ```
 
@@ -46,6 +47,10 @@ python3 Easy-File-Cleanup.py ~/Downloads
 
 Only needed if using the command-line interface. Desktop apps bundle everything.
 
+**Requirements**: Python 3.6+
+
+### macOS/Linux
+
 ```bash
 git clone https://github.com/StewAlexander-com/File_Cleanup.git
 cd File_Cleanup
@@ -53,7 +58,15 @@ chmod +x Easy-File-Cleanup.py
 pip install Flask  # Only needed for --html flag
 ```
 
-**Requirements**: Python 3.6+
+### Windows
+
+```powershell
+git clone https://github.com/StewAlexander-com/File_Cleanup.git
+cd File_Cleanup
+pip install Flask  # Only needed for --html flag
+```
+
+**Note**: On Windows, you may need to use `python` instead of `python3` and `pip` instead of `pip3`. If you encounter issues, try `py -m pip install Flask` or `python -m pip install Flask`.
 
 ## Desktop Apps
 
